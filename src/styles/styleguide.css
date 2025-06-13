@@ -1,0 +1,146 @@
+* {
+  box-sizing: border-box;
+  /* style.css or index.css */
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #010A27;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#root {
+  width: 100%;
+  max-width: 720px;
+  min-width: 320px;
+  /* 모바일 최소 보장 (선택사항) */
+  display: block;
+  /* flex-column 아닌 경우 fallback */
+  padding: 24px 24px;
+}
+
+.app {
+  width: 100%;
+}
+
+:root {
+  --12b-font-family: "Pretendard", Helvetica;
+  --12b-font-size: 12px;
+  --12b-font-style: normal;
+  --12b-font-weight: 700;
+  --12b-letter-spacing: -0.20000000298023224px;
+  --12b-line-height: 16px;
+  --12r-font-family: "Pretendard", Helvetica;
+  --12r-font-size: 12px;
+  --12r-font-style: normal;
+  --12r-font-weight: 400;
+  --12r-letter-spacing: -0.20000000298023224px;
+  --12r-line-height: 16px;
+  --14b-font-family: "Pretendard", Helvetica;
+  --14b-font-size: 14px;
+  --14b-font-style: normal;
+  --14b-font-weight: 700;
+  --14b-letter-spacing: -0.20000000298023224px;
+  --14b-line-height: 18px;
+  --14r-font-family: "Pretendard", Helvetica;
+  --14r-font-size: 14px;
+  --14r-font-style: normal;
+  --14r-font-weight: 400;
+  --14r-letter-spacing: -0.20000000298023224px;
+  --14r-line-height: 18px;
+  --16b-font-family: "Pretendard", Helvetica;
+  --16b-font-size: 16px;
+  --16b-font-style: normal;
+  --16b-font-weight: 700;
+  --16b-letter-spacing: -0.20000000298023224px;
+  --16b-line-height: 24px;
+  --16r-font-family: "Pretendard", Helvetica;
+  --16r-font-size: 16px;
+  --16r-font-style: normal;
+  --16r-font-weight: 400;
+  --16r-letter-spacing: -0.20000000298023224px;
+  --16r-line-height: 24px;
+  --20b-font-family: "Pretendard", Helvetica;
+  --20b-font-size: 20px;
+  --20b-font-style: normal;
+  --20b-font-weight: 700;
+  --20b-letter-spacing: -0.20000000298023224px;
+  --20b-line-height: 28px;
+  --20r-font-family: "Pretendard", Helvetica;
+  --20r-font-size: 20px;
+  --20r-font-style: normal;
+  --20r-font-weight: 400;
+  --20r-letter-spacing: -0.20000000298023224px;
+  --20r-line-height: 28px;
+  --24b-font-family: "Pretendard", Helvetica;
+  --24b-font-size: 24px;
+  --24b-font-style: normal;
+  --24b-font-weight: 700;
+  --24b-letter-spacing: -0.20000000298023224px;
+  --24b-line-height: 32px;
+  --24r-font-family: "Pretendard", Helvetica;
+  --24r-font-size: 24px;
+  --24r-font-style: normal;
+  --24r-font-weight: 400;
+  --24r-letter-spacing: -0.20000000298023224px;
+  --24r-line-height: 32px;
+  --28b-font-family: "Pretendard", Helvetica;
+  --28b-font-size: 28px;
+  --28b-font-style: normal;
+  --28b-font-weight: 700;
+  --28b-letter-spacing: -0.20000000298023224px;
+  --28b-line-height: 36px;
+  --28r-font-family: "Pretendard", Helvetica;
+  --28r-font-size: 28px;
+  --28r-font-style: normal;
+  --28r-font-weight: 400;
+  --28r-letter-spacing: -0.20000000298023224px;
+  --28r-line-height: 36px;
+  --32b-font-family: "Pretendard", Helvetica;
+  --32b-font-size: 32px;
+  --32b-font-style: normal;
+  --32b-font-weight: 700;
+  --32b-letter-spacing: -0.20000000298023224px;
+  --32b-line-height: 40px;
+  --32r-font-family: "Pretendard", Helvetica;
+  --32r-font-size: 32px;
+  --32r-font-style: normal;
+  --32r-font-weight: 400;
+  --32r-letter-spacing: -0.20000000298023224px;
+  --32r-line-height: 40px;
+  --36b-font-family: "Pretendard", Helvetica;
+  --36b-font-size: 36px;
+  --36b-font-style: normal;
+  --36b-font-weight: 700;
+  --36b-letter-spacing: -0.20000000298023224px;
+  --36b-line-height: 48px;
+  --36r-font-family: "Pretendard", Helvetica;
+  --36r-font-size: 36px;
+  --36r-font-style: normal;
+  --36r-font-weight: 400;
+  --36r-letter-spacing: -0.20000000298023224px;
+  --36r-line-height: 48px;
+  --gray-1: rgba(98, 100, 116, 1);
+  --gray-2: rgba(147, 149, 166, 1);
+  --gray-3: rgba(183, 185, 201, 1);
+  --gray-4: rgba(228, 230, 240, 1);
+  --gray-5: rgba(243, 244, 250, 1);
+  --gray-6: rgba(248, 248, 252, 1);
+  --gray-black: rgba(53, 54, 68, 1);
+  --green: rgba(72, 212, 135, 1);
+  --main: rgba(107, 119, 248, 1);
+  --p-main: rgba(3, 110, 183, 1);
+  --p-sub: rgba(23, 28, 97, 1);
+  --shadow: 0px 0px 24px 0px rgba(107, 119, 248, 0.5);
+  --teal: rgba(96, 200, 222, 1);
+  --titleblack: rgba(7, 12, 19, 1);
+  --white: rgba(255, 255, 255, 1);
+}

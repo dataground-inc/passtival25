@@ -1,0 +1,58 @@
+.name-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-direction: column;
+}
+
+.face-wrapper1 {
+    background-color: var(--gray-5);
+    width: 90px;
+    height: 90px;
+    border-radius: 100px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.animal-face1 {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.animal-face1 img {
+  width: 60px;
+}
+
+.rank {
+    color: var(--gray-1);
+  font-family: var(--24b-font-family);
+  font-size: var(--24b-font-size);
+  font-style: var(--24b-font-style);
+  font-weight: var(--24b-font-weight);
+}
+
+.name {
+    color: var(--gray-black);
+  font-family: var(--16b-font-family);
+  font-size: var(--16b-font-size);
+  font-style: var(--16b-font-style);
+  font-weight: var(--16b-font-weight);
+}
+
+.center {
+     color: var(--gray-1);
+  font-family: var(--12r-font-family);
+  font-size: var(--12r-font-size);
+  font-style: var(--12r-font-style);
+  font-weight: var(--12r-font-weight);
+}
+
+.top3-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-direction: column;
+    width: 90px;
+    height: auto;
+}
