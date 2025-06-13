@@ -24,7 +24,7 @@ body {
   /* 모바일 최소 보장 (선택사항) */
   display: block;
   /* flex-column 아닌 경우 fallback */
-  padding: 24px 24px;
+  padding: 24px 16px;
 }
 
 .app {
