@@ -4,6 +4,7 @@ import './App.css';
 import { RankingList } from './components/RankingList';
 import { ButtonFloat } from './components/ButtonFloat';
 import { DropdownFilter } from './components/DropdownFilter'; // [수정] 드롭다운 필터 컴포넌트 추가
+import { SkeletonList } from './components/SkeletonList';
 import './components/DropdownFilter.css'
 
 const FILTERS = [
@@ -58,18 +59,16 @@ function App() {
           <div className='update'>{lastUpdate}</div></div>
 
         <div className='list-wrapper'>
-          {loading ? (
-            <div className='loading-text'>데이터를 불러오는 중이에요🔥</div>
-          ) : (
-            rankingData.map((item, idx) => (
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => <SkeletonList key={i} />)
+            : rankingData.map((item, idx) => (
               <RankingList
                 key={idx + 1}
                 rank={idx + 1}
                 name={item.name}
                 center={item.center}
               />
-            ))
-          )}
+            ))}
         </div>
       </div>
       <ButtonFloat />
