@@ -3,9 +3,10 @@ import './styles/styleguide.css';
 import './App.css';
 import { RankingList } from './components/RankingList';
 import { ButtonFloat } from './components/ButtonFloat';
-import { DropdownFilter } from './components/DropdownFilter'; // [수정] 드롭다운 필터 컴포넌트 추가
+import { DropdownFilter } from './components/DropdownFilter';
 import { SkeletonList } from './components/SkeletonList';
-import './components/DropdownFilter.css'
+import { BottomSheet } from './components/BottomSheet';
+import './components/DropdownFilter.css';
 
 const FILTERS = [
   { key: 'g3_plus_male', label: '고3 이상 남자' },
@@ -21,6 +22,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(FILTERS[0].key);
+  const [showBottomSheet, setShowBottomSheet] = useState(false); // ✅ 바텀시트 상태 추가
 
   useEffect(() => {
     async function fetchData() {
@@ -41,6 +43,12 @@ function App() {
     fetchData();
   }, [selectedFilter]);
 
+  const handleExamSubmit = (examNumber) => {
+    console.log('입력한 수험번호:', examNumber);
+    // 여기에 추후 API 호출 추가
+    setShowBottomSheet(false);
+  };
+
   return (
     <div className="App">
       <div className='adBanner'></div>
@@ -48,7 +56,6 @@ function App() {
         <div className='top-content'>실시간 순위</div>
 
         <div className='drop-update'>
-          {/* [수정] 드롭다운 필터 적용 */}
           <div className='filter-dropdown'>
             <DropdownFilter
               filters={FILTERS}
@@ -56,7 +63,8 @@ function App() {
               onChange={setSelectedFilter}
             />
           </div>
-          <div className='update'>{lastUpdate}</div></div>
+          <div className='update'>{lastUpdate}</div>
+        </div>
 
         <div className='list-wrapper'>
           {loading
@@ -71,8 +79,18 @@ function App() {
             ))}
         </div>
       </div>
-      <ButtonFloat />
-    </div >
+
+      {/* ✅ 바텀시트 조건부 렌더링 */}
+      {showBottomSheet && (
+        <BottomSheet
+          onClose={() => setShowBottomSheet(false)}
+          onSubmit={handleExamSubmit}
+        />
+      )}
+
+      {/* ✅ 버튼 클릭 시 바텀시트 열기 */}
+      <ButtonFloat onClick={() => setShowBottomSheet(true)} />
+    </div>
   );
 }
 

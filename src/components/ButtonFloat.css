@@ -1,4 +1,4 @@
-.float-button-wrapper {
+.button-float {
     padding: 8px 16px;
     background-color: var(--gray-black);
     display: inline-flex;
@@ -10,14 +10,11 @@
     /* 화면 왼쪽 기준으로 50% 이동 */
     transform: translateX(-50%);
     bottom: 48px;
-    box-shadow: 0px 0px 12px #00000080;
+    box-shadow: 0px 0px 16px #ffffff50;
     cursor: pointer;
+    border: none;
 }
 
 .button-title {
     color: var(--white);
-    font-family: var(--14r-font-family);
-    font-size: var(--12r-font-size);
-    font-style: var(--12r-font-style);
-    font-weight: var(--12r-font-weight);
 }
