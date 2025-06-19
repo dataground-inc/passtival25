@@ -1,65 +1,67 @@
+/* 오버레이 */
 .bottom-sheet-overlay {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 어두운 반투명 배경 */
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    position: fixed;
-    background: #00000080;
-    z-index: 1000;
+    z-index: 999;
 }
 
+/* 시트 본체 */
 .bottom-sheet {
     width: 100%;
-    max-width: 688px;
-    background: #fff;
+    max-width: 480px;
+    background-color: #1c1c1e;
+    /* 다크 배경 */
     padding: 24px;
     border-radius: 16px 16px 0 0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    transform: translateY(100%);
-    animation: slide-up 0.4s ease-out forwards;
-    z-index: 1001;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    /* 기본 텍스트 흰색 */
+    animation: slideUp 0.3s ease-out;
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-.input-section {
-    margin-bottom: 8px;
-}
-
+/* 입력 필드 */
 .bottom-sheet input {
     width: 100%;
     padding: 12px;
     margin-top: 12px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid transparent;
+    background-color: #2c2c2e;
+    color: #fff;
     font-size: 16px;
     outline: none;
     transition: border 0.2s ease;
 }
 
+.bottom-sheet input::placeholder {
+    color: #999;
+}
+
 .bottom-sheet input:focus {
-    border: 1px solid #0545FF;
+    border: 1 solid #ffffff;
+    background-color: var(--gray-1);
 }
 
-
-.button-section {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-}
-
+/* 버튼 */
 .cta-button,
 .close-button {
     flex: 1;
-    padding: 8px;
-    border: none;
+    padding: 12px;
     border-radius: 8px;
+    border: none;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .cta-button {
@@ -67,28 +69,26 @@
     color: white;
 }
 
+.cta-button:hover {
+    background-color: #0545FF;
+}
+
 .close-button {
-    background-color: #eee;
-    color: var(--gray-1);
+    background-color: #3a3a3c;
+    color: white;
 }
 
-.bottom-sheet-overlay {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    background: #00000080;
-    z-index: 1000;
+.close-button:hover {
+    background-color: #2a2a2c;
 }
 
-
-@keyframes slide-up {
-    0% {
+/* 애니메이션 */
+@keyframes slideUp {
+    from {
         transform: translateY(100%);
     }
 
-    100% {
+    to {
         transform: translateY(0%);
     }
 }
