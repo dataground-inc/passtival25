@@ -21,14 +21,13 @@ body {
   width: 100%;
   max-width: 720px;
   min-width: 320px;
-  /* 모바일 최소 보장 (선택사항) */
   display: block;
-  /* flex-column 아닌 경우 fallback */
-  padding: 24px 16px;
+  padding: 0px 0px;
 }
 
-.app {
+.App {
   width: 100%;
+  padding: 0px 16px;
 }
 
 :root {

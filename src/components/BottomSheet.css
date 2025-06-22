@@ -50,10 +50,9 @@
 
 .bottom-sheet input:focus {
     border: 1 solid #ffffff;
-    background-color: var(--gray-1);
+    background-color: var(--gray-black);
 }
 
-/* 버튼 */
 .cta-button,
 .close-button {
     flex: 1;

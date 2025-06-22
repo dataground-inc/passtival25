@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles/styleguide.css';
 import './App.css';
+import { useNavigate } from 'react-router-dom';
 import { RankingList } from './components/RankingList';
 import { ButtonFloat } from './components/ButtonFloat';
 import { DropdownFilter } from './components/DropdownFilter';
@@ -15,39 +16,51 @@ const FILTERS = [
   { key: 'g1_g2_female', label: '고2 이하 여자' },
 ];
 
-const API_BASE = 'https://script.google.com/macros/s/AKfycbxc4mTVfjJGKHt9K7OHTOxblNtOKt_Huiq_K9c14W16FWns0Dhxhwew5HCoSsO34bgM/exec';
+const API_BASE_RANKING = 'https://script.google.com/macros/s/AKfycbxc4mTVfjJGKHt9K7OHTOxblNtOKt_Huiq_K9c14W16FWns0Dhxhwew5HCoSsO34bgM/exec';
 
-function App() {
+function App({ setUserData }) {
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState('');
   const [selectedFilter, setSelectedFilter] = useState(FILTERS[0].key);
-  const [showBottomSheet, setShowBottomSheet] = useState(false); // ✅ 바텀시트 상태 추가
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+
+  const navigate = useNavigate(); // ✅ 이제 사용 가능
+
+  const handleExamSubmit = async (examNumber) => {
+    try {
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbyZelybkcXXk9yrOOQ4Vx9GQFtN4aOd_BJ2XGKqAYLLNJ3B9t1AK_eKQlmiil0tvjFn/exec?examNumber=${examNumber}`);
+      const data = await res.json();
+      if (data.error) {
+        alert('수험번호를 찾을 수 없습니다.');
+        return;
+      }
+      setUserData(data); // 전역으로 상태 설정
+      navigate('/my-ranking');
+    } catch (err) {
+      alert('데이터 조회에 실패했습니다.');
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchRankingData() {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE}?filter=${selectedFilter}`);
+        const res = await fetch(`${API_BASE_RANKING}?filter=${selectedFilter}`);
         const data = await res.json();
         setRankingData(data);
-
         const now = new Date();
-        setLastUpdate(`${now.getHours()}시 ${now.getMinutes()}분 기준`);
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        setLastUpdate(`${hour}시 ${minute}분 기준`);
       } catch (error) {
-        alert('데이터를 불러오지 못했습니다.');
-        console.error(error);
+        console.error('랭킹 데이터를 불러오지 못했습니다:', error);
       }
       setLoading(false);
     }
-    fetchData();
-  }, [selectedFilter]);
 
-  const handleExamSubmit = (examNumber) => {
-    console.log('입력한 수험번호:', examNumber);
-    // 여기에 추후 API 호출 추가
-    setShowBottomSheet(false);
-  };
+    fetchRankingData();
+  }, [selectedFilter]);
 
   return (
     <div className="App">
@@ -80,15 +93,12 @@ function App() {
         </div>
       </div>
 
-      {/* ✅ 바텀시트 조건부 렌더링 */}
       {showBottomSheet && (
         <BottomSheet
           onClose={() => setShowBottomSheet(false)}
           onSubmit={handleExamSubmit}
         />
       )}
-
-      {/* ✅ 버튼 클릭 시 바텀시트 열기 */}
       <ButtonFloat onClick={() => setShowBottomSheet(true)} />
     </div>
   );
