@@ -9,7 +9,7 @@
     left: 50%;
     /* 화면 왼쪽 기준으로 50% 이동 */
     transform: translateX(-50%);
-    bottom: 48px;
+    bottom: 32px;
     box-shadow: 0px 0px 16px #ffffff50;
     cursor: pointer;
     border: none;
