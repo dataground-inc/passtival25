@@ -37,6 +37,11 @@ export const MyRankingPage = ({ userData }) => {
                         <span className='font-20b'>{userData.medicineBall}m</span>
                     </div>
                 </div>
+                <div className='record-box'>
+                    <div className='record-item'>
+                        <span className='font-12r'>20m 왕복달리기</span>
+                        <span className='font-20b'>{userData.run20m}초</span></div>
+                </div>
             </div>
         </div>
     );

@@ -16,7 +16,8 @@ const FILTERS = [
   { key: 'g1_g2_female', label: '고2 이하 여자' },
 ];
 
-const API_BASE_RANKING = 'https://script.google.com/macros/s/AKfycbxc4mTVfjJGKHt9K7OHTOxblNtOKt_Huiq_K9c14W16FWns0Dhxhwew5HCoSsO34bgM/exec';
+// ✅ 단일 API 주소 사용 (Apps Script에서 mode로 분기)
+const API_BASE = 'https://script.google.com/macros/s/AKfycbyF-RbM0MxCE06sFEw7sorYw_u_fZlxd5-5omQikP9dZRUCTLybF_K6T1TeC1m2sjUY/exec';
 
 function App({ setUserData }) {
   const [rankingData, setRankingData] = useState([]);
@@ -25,42 +26,57 @@ function App({ setUserData }) {
   const [selectedFilter, setSelectedFilter] = useState(FILTERS[0].key);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
 
-  const navigate = useNavigate(); // ✅ 이제 사용 가능
+  const navigate = useNavigate();
 
+  // ✅ 수험번호 입력 후 유저 정보 API 호출
   const handleExamSubmit = async (examNumber) => {
     try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbyZelybkcXXk9yrOOQ4Vx9GQFtN4aOd_BJ2XGKqAYLLNJ3B9t1AK_eKQlmiil0tvjFn/exec?examNumber=${examNumber}`);
+      const res = await fetch(`${API_BASE}?mode=exam&examNumber=${examNumber}`);
       const data = await res.json();
       if (data.error) {
         alert('수험번호를 찾을 수 없습니다.');
         return;
       }
-      setUserData(data); // 전역으로 상태 설정
+      setUserData(data); // ✅ 부모에게 상태 전달
       navigate('/my-ranking');
     } catch (err) {
       alert('데이터 조회에 실패했습니다.');
     }
   };
 
+  // ✅ Top5 랭킹 API 호출
   useEffect(() => {
     async function fetchRankingData() {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE_RANKING}?filter=${selectedFilter}`);
+        const res = await fetch(`${API_BASE}?mode=top5&filter=${selectedFilter}`);
         const data = await res.json();
-        setRankingData(data);
+        console.log('Top5 응답:', data);
+
+        console.log("✅ 전체 응답 데이터:", data);
+        console.log("✅ data.result 확인:", data.result);
+        console.log("✅ data.result가 배열인가?", Array.isArray(data.result));
+
+        // 응답 형식에 따라 처리
+        if (Array.isArray(data.result)) {
+          setRankingData(data.result);
+        } else {
+          console.error("Top5 응답 형식이 배열이 아닙니다", data);
+          setRankingData([]); // 안전하게 초기화
+        }
+
         const now = new Date();
-        const hour = now.getHours();
-        const minute = now.getMinutes();
-        setLastUpdate(`${hour}시 ${minute}분 기준`);
+        setLastUpdate(`${now.getHours()}시 ${now.getMinutes()}분 기준`);
       } catch (error) {
         console.error('랭킹 데이터를 불러오지 못했습니다:', error);
+        setRankingData([]);
       }
       setLoading(false);
     }
 
     fetchRankingData();
   }, [selectedFilter]);
+
 
   return (
     <div className="App">
