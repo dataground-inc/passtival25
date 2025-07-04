@@ -19,7 +19,7 @@ const FILTERS = [
 ];
 
 // ✅ 단일 API 주소 사용 (Apps Script에서 mode로 분기)
-const API_BASE = 'https://script.google.com/macros/s/AKfycbyF-RbM0MxCE06sFEw7sorYw_u_fZlxd5-5omQikP9dZRUCTLybF_K6T1TeC1m2sjUY/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbx223VNNJuM-xB_h0k5FlylFO8rZ_iKTbNCuPxfWkmYdCaumyt6wUJJQCEuATtxhHwr/exec';
 
 function App({ setUserData }) {
   const [rankingData, setRankingData] = useState([]);
