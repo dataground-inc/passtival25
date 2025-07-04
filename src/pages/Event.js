@@ -15,11 +15,13 @@ const EventPage = () => {
             <TopNav />
             <div className="event-section">
                 <div className="event-subtitle font-20b" >패스체대입시 X Z-ONE</div>
-                <span className="event-title"> 50% 할인받고<br />합격 분석, 모의 지원까지!</span>
+                <span className="event-title font-28b"> 50% 할인받고<br />합격 분석, 모의 지원까지!</span>
 
                 <div className="event-code font-20b">할인 코드 : PASS50</div>
                 <div className="event-description font-16r">멤버십 구매 시, 할인 코드를 입력하세요!</div>
-                <AdCarousel />
+                <div style={{ marginBottom: '60px' }}>
+                    <AdCarousel />
+                </div>
             </div>
             {/* ✅ 하단 플로팅 버튼 */}
             <div className="floating-button-wrapper">

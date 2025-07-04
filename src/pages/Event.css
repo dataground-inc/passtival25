@@ -2,7 +2,7 @@
     background-color: #EAF6FB;
     background: linear-gradient(180deg, #F4F4F4 0%, #B0D1FF 100%);
     min-height: 100vh;
-    padding: 16px 24px;
+    padding: 24px 16px;
     overflow: visible;
 }
 
@@ -15,11 +15,8 @@
 .event-title {
     text-align: center;
     color: #0545FF;
+    font-weight: 900 !important;
     margin-top: 12px;
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.4;
-    ;
 }
 
 .event-subtitle {
