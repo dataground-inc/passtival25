@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { MyRankingPage } from './pages/MyRankingPage';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import EventPage from './pages/Event';
 import NProgress from './nprogress'; // nprogress utils 파일
 
@@ -33,9 +33,9 @@ const Root = () => {
   const [userData, setUserData] = useState(null);
 
   return (
-    <BrowserRouter basename="/passtival25">
+    <HashRouter>
       <ProgressRouter setUserData={setUserData} userData={userData} />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
