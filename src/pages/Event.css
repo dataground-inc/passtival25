@@ -1,0 +1,68 @@
+.event-page {
+    background-color: #EAF6FB;
+    background: linear-gradient(180deg, #F4F4F4 0%, #B0D1FF 100%);
+    min-height: 100vh;
+    padding: 16px 24px;
+    overflow: visible;
+}
+
+.event-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.event-title {
+    text-align: center;
+    color: #0545FF;
+    margin-top: 12px;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.4;
+    ;
+}
+
+.event-subtitle {
+    color: var(--gray-black);
+    text-align: center;
+    margin-top: 16px;
+}
+
+.event-code {
+    color: var(--gray-black);
+    margin-top: 16px;
+}
+
+.event-description {
+    text-align: center;
+    color: var(--gray-1);
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.floating-button-wrapper {
+    position: fixed;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 999;
+}
+
+.floating-button {
+    background-color: #004CFF;
+    /* 쨍한 파랑 */
+    color: #fff;
+    padding: 16px 32px;
+    border: none;
+    border-radius: 999px;
+    width: calc(100% - 32px);
+    box-shadow: 0px 0px 12px rgba(0, 76, 255, 0.3);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.floating-button:hover {
+    background-color: #003BCA;
+}

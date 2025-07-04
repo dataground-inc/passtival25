@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import EventPage from './pages/Event';
 import './styles/styleguide.css';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { DropdownFilter } from './components/DropdownFilter';
 import { SkeletonList } from './components/SkeletonList';
 import { BottomSheet } from './components/BottomSheet';
 import './components/DropdownFilter.css';
+
 
 const FILTERS = [
   { key: 'g3_plus_male', label: '고3 이상 남자' },
@@ -81,8 +83,13 @@ function App({ setUserData }) {
   return (
     <div className="App">
       <div className='adBanner'>
-        <img src='https://github.com/dataground-inc/passtival25/blob/main/adBanner2.png?raw=true'></img>
+        <a href="/passtival25/event"
+          target="_blank"
+          rel="noopener noreferrer">
+          <img src='https://github.com/dataground-inc/passtival25/blob/main/adBanner2.png?raw=true'></img>
+        </a>
       </div>
+
       <div className='ranking-section'>
         <div className='top-content'>실시간 순위</div>
 

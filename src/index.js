@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import { MyRankingPage } from './pages/MyRankingPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import EventPage from './pages/Event';
 
 
 const Root = () => {
@@ -14,6 +15,7 @@ const Root = () => {
       <Routes>
         <Route path="/" element={<App setUserData={setUserData} />} />
         <Route path="/my-ranking" element={<MyRankingPage userData={userData} />} />
+        <Route path="/event" element={<EventPage />} />
       </Routes>
     </BrowserRouter>
   );
