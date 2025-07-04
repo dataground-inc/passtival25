@@ -81,7 +81,7 @@ function App({ setUserData }) {
   return (
     <div className="App">
       <div className='adBanner'>
-        <img src='https://raw.githubusercontent.com/dataground-inc/passtival25/refs/heads/main/adBanner.png'></img>
+        <img src='https://github.com/dataground-inc/passtival25/blob/main/adBanner2.png?raw=true'></img>
       </div>
       <div className='ranking-section'>
         <div className='top-content'>실시간 순위</div>
