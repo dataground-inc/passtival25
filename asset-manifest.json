@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/passtival25/static/css/main.c94ef877.css",
-    "main.js": "/passtival25/static/js/main.068beb81.js",
+    "main.css": "/passtival25/static/css/main.0044382d.css",
+    "main.js": "/passtival25/static/js/main.a4c5d4c9.js",
     "index.html": "/passtival25/index.html",
-    "main.c94ef877.css.map": "/passtival25/static/css/main.c94ef877.css.map",
-    "main.068beb81.js.map": "/passtival25/static/js/main.068beb81.js.map"
+    "main.0044382d.css.map": "/passtival25/static/css/main.0044382d.css.map",
+    "main.a4c5d4c9.js.map": "/passtival25/static/js/main.a4c5d4c9.js.map"
   },
   "entrypoints": [
-    "static/css/main.c94ef877.css",
-    "static/js/main.068beb81.js"
+    "static/css/main.0044382d.css",
+    "static/js/main.a4c5d4c9.js"
   ]
 }
