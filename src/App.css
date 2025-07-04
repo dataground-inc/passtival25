@@ -55,11 +55,15 @@
 
 .adBanner {
   width: 100%;
-  background-color: var(--gray-3);
-  aspect-ratio: 343/140;
+  background-color: transparent;
+  aspect-ratio: 516/144;
   border-radius: 12px;
   margin-top: 24px;
   margin-bottom: 16px;
+}
+
+.adBanner img {
+  width: 100%;
 }
 
 .drop-update {

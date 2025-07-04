@@ -80,7 +80,9 @@ function App({ setUserData }) {
 
   return (
     <div className="App">
-      <div className='adBanner'></div>
+      <div className='adBanner'>
+        <img src='https://raw.githubusercontent.com/dataground-inc/passtival25/refs/heads/main/adBanner.png'></img>
+      </div>
       <div className='ranking-section'>
         <div className='top-content'>실시간 순위</div>
 
