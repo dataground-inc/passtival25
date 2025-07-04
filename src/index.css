@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#nprogress .bar {
+  background: white !important;
+  height: 4px !important;
+}
+
+#nprogress .peg {}
