@@ -83,7 +83,7 @@ function App({ setUserData }) {
   return (
     <div className="App">
       <div className='adBanner'>
-        <a href="/passtival25/event"
+        <a href="https://dataground-inc.github.io/passtival25/#/event"
           target="_blank"
           rel="noopener noreferrer">
           <img src='https://github.com/dataground-inc/passtival25/blob/main/adBanner2.png?raw=true'></img>
