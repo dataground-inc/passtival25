@@ -71,10 +71,16 @@ export function normalizeTopFive(payload) {
     throw new PasstivalApiError(PasstivalApiError.INVALID_RESPONSE);
   }
 
-  return rows.map((row) => ({
-    name: cleanText(firstValue(row, ['name', 'userName'])),
-    center: cleanText(firstValue(row, ['center', 'branch'])),
-  }));
+  return rows.map((row) => {
+    if (!row || typeof row !== 'object' || Array.isArray(row)) {
+      throw new PasstivalApiError(PasstivalApiError.INVALID_RESPONSE);
+    }
+
+    return {
+      name: cleanText(firstValue(row, ['name', 'userName'])),
+      center: cleanText(firstValue(row, ['center', 'branch'])),
+    };
+  });
 }
 
 function buildUrl(params) {

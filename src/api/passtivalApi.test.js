@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   GROUPS,
   PasstivalApiError,
@@ -7,6 +7,8 @@ import {
   normalizeParticipant,
   normalizeTopFive,
 } from './passtivalApi';
+
+afterEach(() => vi.unstubAllGlobals());
 
 describe('passtival API contract', () => {
   it('uses exact Apps Script group names', () => {
@@ -90,10 +92,34 @@ describe('passtival API contract', () => {
     expect(normalizeTopFive({ result: [] })).toEqual([]);
   });
 
+  it.each([null, 'invalid row', []])('rejects malformed top-five rows', (row) => {
+    let error;
+
+    try {
+      normalizeTopFive({ result: [row] });
+    } catch (caught) {
+      error = caught;
+    }
+
+    expect(error).toBeInstanceOf(PasstivalApiError);
+    expect(error).toMatchObject({ code: PasstivalApiError.INVALID_RESPONSE });
+  });
+
   it('maps a not-found response to a stable error code', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ error: 'not found' }),
+    }));
+
+    await expect(lookupParticipant('101')).rejects.toEqual(
+      expect.objectContaining({ code: PasstivalApiError.NOT_FOUND }),
+    );
+  });
+
+  it('maps an HTTP 404 response to a stable error code', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
     }));
 
     await expect(lookupParticipant('101')).rejects.toEqual(
