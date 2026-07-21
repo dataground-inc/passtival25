@@ -10,6 +10,10 @@
 
 # production
 /build
+/dist
+
+# isolated development worktrees
+/.worktrees
 
 # misc
 .DS_Store
