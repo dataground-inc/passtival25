@@ -50,7 +50,7 @@ export function OnboardingPage() {
     <main>
       <h1>PASSTIVAL</h1>
       <button type="button" onClick={() => setIsLookupOpen(true)}>
-        {'\uB0B4 \uC21C\uC704 \uC870\uD68C'}
+        {'\uB0B4 \uC21C\uC704 \uD655\uC778\uD558\uAE30'}
       </button>
 
       {isLookupOpen && (

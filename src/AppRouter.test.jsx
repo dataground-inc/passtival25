@@ -33,6 +33,18 @@ it('renders the top five route', () => {
   expect(screen.getByRole('heading', { name: 'Top 5' })).toBeInTheDocument();
 });
 
+it('uses the required accessible name for the primary lookup command', () => {
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <AppRouter />
+    </MemoryRouter>,
+  );
+
+  expect(
+    screen.getByRole('button', { name: '\uB0B4 \uC21C\uC704 \uD655\uC778\uD558\uAE30' }),
+  ).toBeInTheDocument();
+});
+
 it('removes lookup mode from the URL after opening the sheet', async () => {
   render(
     <MemoryRouter initialEntries={['/?lookup=1']}>
