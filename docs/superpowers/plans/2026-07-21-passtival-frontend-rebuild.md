@@ -15,7 +15,7 @@
 - Hash routes are `#/`, `#/my-ranking`, and `#/top5` for GitHub Pages compatibility.
 - Personal total score must never be rendered.
 - Missing record values render as `미응시`.
-- Figma nodes `1845:5163` and `1872:1237` are the visual sources.
+- Figma nodes `1845:5163`, `1872:1237`, and female result node `1883:1380` are the visual sources.
 - Figma raster assets must be stored locally and never loaded from temporary MCP URLs at runtime.
 - Motion must respect `prefers-reduced-motion` and must not delay navigation or data access.
 - The minimum supported viewport is 320px wide.
@@ -291,6 +291,7 @@ git commit -m "feat: add passtival routes and session restore"
 **Files:**
 - Create: `src/assets/passtival-title.png`
 - Create: `src/assets/athlete-hero.png`
+- Create: `src/assets/athlete-hero-female.png`
 - Create: `src/components/ExamLookupSheet.jsx`
 - Create: `src/components/ExamLookupSheet.test.jsx`
 - Modify: `src/pages/OnboardingPage.jsx`
@@ -391,7 +392,7 @@ On mount, read the session exam number and call `lookupParticipant`. Render a di
 
 - [ ] **Step 4: Implement the Figma composition**
 
-Render the top bar, local athlete image, navy fade, name, exam number, center/grade/gender/group metadata, current rank, total count, and `RecordList`. Format numeric counts with `Intl.NumberFormat('ko-KR')`. Do not render or pass through total score.
+Render the fixed top bar, gender-matched local athlete image, navy fade, name, center/grade/normalized-gender metadata, current rank, total count, and `RecordList`. Do not render exam number or group in the identity block. Format numeric counts with `Intl.NumberFormat('ko-KR')`. Do not render or pass through total score.
 
 - [ ] **Step 5: Verify and commit Task 4**
 

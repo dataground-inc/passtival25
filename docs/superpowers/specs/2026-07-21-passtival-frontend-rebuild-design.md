@@ -10,7 +10,7 @@ Included:
 
 - Onboarding screen based on Figma node `1845:5163`
 - Exam-number bottom sheet
-- Personal result screen based on Figma node `1872:1237`
+- Personal result screen based on male node `1872:1237` and female node `1883:1380`
 - Group TOP 5 screen
 - Loading, empty, validation, and network-error states
 - Mobile-first responsive layouts
@@ -80,15 +80,15 @@ Submission states are idle, submitting, invalid/not found, and network failure. 
 
 ### Personal Result
 
-Preserve the Figma composition from node `1872:1237`: athlete image at the top, dark navy fade, compact top bar, participant identity, rank block, and records list.
+Preserve the Figma composition from male node `1872:1237` and female node `1883:1380`: gender-matched athlete image at the top, dark navy fade, fixed compact top bar, participant identity, rank block, and records list.
 
 Display:
 
-- Name, exam number, center, grade, gender, and group
+- Name, center, grade, and normalized `남학생` or `여학생`
 - Group rank and total participant count
 - Standing long jump, back strength, 10m shuttle run, medicine-ball throw, and sit-and-reach
 
-Use `미응시` when a record is null, undefined, an empty string, or whitespace. Do not append units in the first release because the supplied data already mixes formatted and raw values; this avoids displaying incorrect duplicate units. The footer guidance is `실기 기록이 잘못되었다면 근처 기록 작성 스태프에게 문의해 주세요.`
+Exam number and group remain part of the lookup/API contract but are not rendered in the participant identity block. Use `미응시` when a record is null, undefined, an empty string, or whitespace. Do not append units in the first release because the supplied data already mixes formatted and raw values; this avoids displaying incorrect duplicate units. The footer guidance is `실기 기록이 잘못되었다면 근처 기록 작성 스태프에게 문의해 주세요.`
 
 ### TOP 5
 
