@@ -73,6 +73,49 @@ describe('ExamLookupSheet', () => {
     });
   });
 
+  it('does not report success when a pending lookup resolves after dismissal', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn();
+    let resolveLookup;
+    lookupParticipant.mockImplementation(() => new Promise((resolve) => {
+      resolveLookup = resolve;
+    }));
+
+    function DismissibleSheet() {
+      const [isOpen, setIsOpen] = useState(true);
+      const triggerRef = useRef(null);
+
+      return (
+        <>
+          <button ref={triggerRef} type="button">
+            내 순위 확인하기
+          </button>
+          {isOpen && (
+            <ExamLookupSheet
+              onClose={() => setIsOpen(false)}
+              onSuccess={onSuccess}
+              triggerRef={triggerRef}
+            />
+          )}
+        </>
+      );
+    }
+
+    render(<DismissibleSheet />);
+
+    await user.type(screen.getByLabelText('수험번호'), '00123');
+    await user.click(screen.getByRole('button', { name: '기록 확인하기' }));
+    await user.click(screen.getByRole('button', { name: '닫기' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolveLookup({ examNumber: '00123' });
+    });
+
+    expect(onSuccess).not.toHaveBeenCalled();
+  });
+
   it('shows a not-found message and keeps the submitted number', async () => {
     const user = userEvent.setup();
     lookupParticipant.mockRejectedValue(
@@ -155,8 +198,11 @@ describe('ExamLookupSheet', () => {
     await user.keyboard('{Shift>}{Tab}{/Shift}');
     expect(screen.getByRole('button', { name: '닫기' })).toHaveFocus();
 
+    await user.keyboard('{Shift>}{Tab}{/Shift}');
+    expect(screen.getByRole('button', { name: '기록 확인하기' })).toHaveFocus();
+
     await user.keyboard('{Tab}');
-    expect(input).toHaveFocus();
+    expect(screen.getByRole('button', { name: '닫기' })).toHaveFocus();
 
     await user.keyboard('{Escape}');
     expect(trigger).toHaveFocus();

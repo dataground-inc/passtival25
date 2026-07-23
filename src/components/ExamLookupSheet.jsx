@@ -11,10 +11,15 @@ const FOCUSABLE_SELECTOR = [
 export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
   const dialogRef = useRef(null);
   const inputRef = useRef(null);
+  const isMountedRef = useRef(true);
   const [examNumber, setExamNumber] = useState('');
   const [error, setError] = useState('');
   const [isRetryable, setIsRetryable] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => () => {
+    isMountedRef.current = false;
+  }, []);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -72,9 +77,17 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
 
     try {
       await lookupParticipant(trimmedExamNumber);
+      if (!isMountedRef.current) {
+        return;
+      }
+
       setIsSubmitting(false);
       onSuccess(trimmedExamNumber);
     } catch (caughtError) {
+      if (!isMountedRef.current) {
+        return;
+      }
+
       const isNotFound = caughtError?.code === PasstivalApiError.NOT_FOUND;
       setError(
         isNotFound
