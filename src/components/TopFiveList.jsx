@@ -1,6 +1,12 @@
+import { motion, useReducedMotion } from 'framer-motion';
+import { createMotionVariants } from '../motion';
+
 const PLACEHOLDER_COUNT = 5;
 
 export function TopFiveList({ entries = [], isLoading = false }) {
+  const reduceMotion = useReducedMotion();
+  const motionVariants = createMotionVariants(Boolean(reduceMotion));
+
   if (isLoading) {
     return (
       <div aria-busy="true" className="top-five-list top-five-list--loading">
@@ -33,14 +39,21 @@ export function TopFiveList({ entries = [], isLoading = false }) {
   }
 
   return (
-    <ol aria-label="TOP 5 순위" className="top-five-list">
+    <motion.ol
+      animate="visible"
+      aria-label="TOP 5 순위"
+      className="top-five-list"
+      initial="hidden"
+      variants={motionVariants.list}
+    >
       {entries.map((entry, index) => {
         const rank = index + 1;
 
         return (
-          <li
+          <motion.li
             className={`top-five-list__row top-five-list__row--rank-${rank}`}
             key={`${entry.name}-${entry.center}-${rank}`}
+            variants={motionVariants.item}
           >
             <span aria-label={`${rank}위`} className="top-five-list__rank">
               {rank}
@@ -49,9 +62,9 @@ export function TopFiveList({ entries = [], isLoading = false }) {
               <strong>{entry.name}</strong>
               <span>{entry.center}</span>
             </span>
-          </li>
+          </motion.li>
         );
       })}
-    </ol>
+    </motion.ol>
   );
 }

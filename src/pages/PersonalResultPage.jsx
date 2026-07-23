@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { lookupParticipant } from '../api/passtivalApi';
 import athleteHero from '../assets/athlete-hero.png';
 import { AsyncState } from '../components/AsyncState';
 import { RecordList } from '../components/RecordList';
 import { TopBar } from '../components/TopBar';
+import { createMotionVariants } from '../motion';
 import { readExamNumber } from '../storage/examSession';
 import { formatDisplayValue } from '../utils/displayValue';
 
@@ -35,6 +37,8 @@ export function PersonalResultPage() {
   const [requestAttempt, setRequestAttempt] = useState(0);
   const [requestState, setRequestState] = useState('loading');
   const [participant, setParticipant] = useState(null);
+  const reduceMotion = useReducedMotion();
+  const motionVariants = createMotionVariants(Boolean(reduceMotion));
 
   useEffect(() => {
     if (!examNumber) {
@@ -74,7 +78,12 @@ export function PersonalResultPage() {
         />
       ) : (
         <>
-          <div className="personal-result__visual">
+          <motion.div
+            animate="visible"
+            className="personal-result__visual"
+            initial="hidden"
+            variants={motionVariants.item}
+          >
             <img
               alt=""
               className="personal-result__athlete"
@@ -82,10 +91,18 @@ export function PersonalResultPage() {
               src={athleteHero}
               width="390"
             />
-          </div>
+          </motion.div>
 
-          <div className="personal-result__content">
-            <section className="personal-result__identity">
+          <motion.div
+            animate="visible"
+            className="personal-result__content"
+            initial="hidden"
+            variants={motionVariants.list}
+          >
+            <motion.section
+              className="personal-result__identity"
+              variants={motionVariants.item}
+            >
               <h1>{formatDisplayValue(participant.name)}</h1>
               <div className="personal-result__metadata" aria-label="참가자 정보">
                 <span>{formatDisplayValue(participant.center)}</span>
@@ -97,21 +114,30 @@ export function PersonalResultPage() {
                   <span>{formatDisplayValue(participant.examNumber)}</span>
                 </span>
               </div>
-            </section>
+            </motion.section>
 
-            <section className="personal-result__ranking" aria-labelledby="current-rank">
+            <motion.section
+              aria-labelledby="current-rank"
+              className="personal-result__ranking"
+              variants={motionVariants.item}
+            >
               <div>
                 <p id="current-rank">현재 순위</p>
                 <strong>{formatRank(participant.rank)}</strong>
               </div>
               <p>{formatTotalCount(participant.totalCount)}</p>
-            </section>
+            </motion.section>
 
-            <RecordList records={participant.records} />
-            <p className="personal-result__guidance">
+            <motion.div variants={motionVariants.item}>
+              <RecordList records={participant.records} />
+            </motion.div>
+            <motion.p
+              className="personal-result__guidance"
+              variants={motionVariants.item}
+            >
               실기 기록이 잘못되었다면 근처 기록 작성 스태프에게 문의해 주세요.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </>
       )}
     </main>

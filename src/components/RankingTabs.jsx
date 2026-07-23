@@ -1,7 +1,11 @@
 import { useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { createMotionVariants } from '../motion';
 
 export function RankingTabs({ groups, onSelect, selectedGroup }) {
   const tabRefs = useRef([]);
+  const reduceMotion = useReducedMotion();
+  const motionVariants = createMotionVariants(Boolean(reduceMotion));
 
   function selectByIndex(index) {
     const nextIndex = (index + groups.length) % groups.length;
@@ -32,7 +36,7 @@ export function RankingTabs({ groups, onSelect, selectedGroup }) {
           const isSelected = group === selectedGroup;
 
           return (
-            <button
+            <motion.button
               aria-controls="top-five-ranking-panel"
               aria-selected={isSelected}
               className="ranking-tabs__tab"
@@ -46,9 +50,18 @@ export function RankingTabs({ groups, onSelect, selectedGroup }) {
               role="tab"
               tabIndex={isSelected ? 0 : -1}
               type="button"
+              whileTap={motionVariants.press}
             >
-              {group}
-            </button>
+              <span className="ranking-tabs__label">{group}</span>
+              {isSelected && (
+                <motion.span
+                  aria-hidden="true"
+                  className="ranking-tabs__indicator"
+                  layoutId="active-ranking-tab-indicator"
+                  transition={motionVariants.tabIndicator}
+                />
+              )}
+            </motion.button>
           );
         })}
       </div>

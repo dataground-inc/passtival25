@@ -45,6 +45,12 @@ input:focus-visible {
   min-height: 100svh;
 }
 
+.route-frame {
+  width: 100%;
+  min-height: 100svh;
+  overflow-x: clip;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

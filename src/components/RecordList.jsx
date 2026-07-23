@@ -1,3 +1,5 @@
+import { motion, useReducedMotion } from 'framer-motion';
+import { createMotionVariants } from '../motion';
 import { formatDisplayValue } from '../utils/displayValue';
 
 const RECORDS = [
@@ -9,17 +11,29 @@ const RECORDS = [
 ];
 
 export function RecordList({ records = {} }) {
+  const reduceMotion = useReducedMotion();
+  const motionVariants = createMotionVariants(Boolean(reduceMotion));
+
   return (
     <section className="record-list" aria-labelledby="record-list-title">
       <h2 id="record-list-title">기록</h2>
-      <dl>
+      <motion.dl
+        animate="visible"
+        initial="hidden"
+        variants={motionVariants.list}
+      >
         {RECORDS.map(([key, label]) => (
-          <div className="record-list__row" key={key} role="group">
+          <motion.div
+            className="record-list__row"
+            key={key}
+            role="group"
+            variants={motionVariants.item}
+          >
             <dt>{label}</dt>
             <dd>{formatDisplayValue(records[key])}</dd>
-          </div>
+          </motion.div>
         ))}
-      </dl>
+      </motion.dl>
     </section>
   );
 }

@@ -81,22 +81,23 @@
   white-space: nowrap;
 }
 
-.ranking-tabs__tab::after {
+.ranking-tabs__label {
+  position: relative;
+  z-index: 1;
+}
+
+.ranking-tabs__indicator {
   position: absolute;
   right: 8px;
   bottom: -1px;
   left: 8px;
   height: 2px;
-  background: transparent;
-  content: "";
+  background: var(--color-blue);
+  pointer-events: none;
 }
 
 .ranking-tabs__tab[aria-selected="true"] {
   color: var(--color-gray-6);
-}
-
-.ranking-tabs__tab[aria-selected="true"]::after {
-  background: var(--color-blue);
 }
 
 .ranking-tabs__tab:hover {

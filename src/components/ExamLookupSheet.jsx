@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { PasstivalApiError, lookupParticipant } from '../api/passtivalApi';
+import { createMotionVariants } from '../motion';
 
 const FOCUSABLE_SELECTOR = [
   'button:not([disabled])',
@@ -16,6 +18,13 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
   const [error, setError] = useState('');
   const [isRetryable, setIsRetryable] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const motionVariants = createMotionVariants(Boolean(reduceMotion));
+
+  function handleClose() {
+    isMountedRef.current = false;
+    onClose();
+  }
 
   useEffect(() => () => {
     isMountedRef.current = false;
@@ -29,7 +38,7 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
         event.preventDefault();
-        onClose();
+        handleClose();
         return;
       }
 
@@ -101,24 +110,37 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
 
   function handleBackdropClick(event) {
     if (event.target === event.currentTarget) {
-      onClose();
+      handleClose();
     }
   }
 
   return (
-    <div className="exam-sheet-backdrop" onMouseDown={handleBackdropClick}>
-      <section
+    <motion.div
+      animate="visible"
+      className="exam-sheet-backdrop"
+      exit="exit"
+      initial="hidden"
+      onMouseDown={handleBackdropClick}
+      variants={motionVariants.backdrop}
+    >
+      <motion.section
         aria-labelledby="exam-sheet-title"
         aria-modal="true"
         className="exam-sheet"
         ref={dialogRef}
         role="dialog"
+        variants={motionVariants.sheet}
       >
         <header className="exam-sheet__header">
           <h2 id="exam-sheet-title">수험번호 입력</h2>
-          <button className="exam-sheet__close" type="button" onClick={onClose}>
+          <motion.button
+            className="exam-sheet__close"
+            onClick={handleClose}
+            type="button"
+            whileTap={motionVariants.press}
+          >
             닫기
-          </button>
+          </motion.button>
         </header>
 
         <p className="exam-sheet__guidance" id="exam-sheet-guidance">
@@ -148,15 +170,16 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
             )}
           </div>
 
-          <button
+          <motion.button
             className="exam-sheet__submit"
             disabled={isSubmitting}
             type="submit"
+            whileTap={motionVariants.press}
           >
             {isSubmitting ? '확인 중' : isRetryable ? '다시 시도하기' : '기록 확인하기'}
-          </button>
+          </motion.button>
         </form>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
