@@ -8,6 +8,7 @@ import './styles/shared.css';
 import './styles/onboarding.css';
 import './styles/exam-sheet.css';
 import './styles/personal-result.css';
+import './styles/top-five.css';
 
 createRoot(document.getElementById('root')).render(
   <HashRouter>
