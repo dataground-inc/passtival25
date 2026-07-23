@@ -1,9 +1,26 @@
-import { render, screen } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import { beforeEach, expect, it } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
+import { fetchTopFive, GROUPS } from './api/passtivalApi';
 import AppRouter from './AppRouter';
 
-beforeEach(() => sessionStorage.clear());
+const appRouterSource = readFileSync('src/AppRouter.jsx', 'utf8');
+
+vi.mock('./api/passtivalApi', async () => {
+  const actual = await vi.importActual('./api/passtivalApi');
+
+  return {
+    ...actual,
+    fetchTopFive: vi.fn(),
+  };
+});
+
+beforeEach(() => {
+  sessionStorage.clear();
+  fetchTopFive.mockReset();
+  fetchTopFive.mockReturnValue(new Promise(() => {}));
+});
 
 function LocationProbe() {
   const location = useLocation();
@@ -31,6 +48,24 @@ it('renders the top five route', () => {
   );
 
   expect(screen.getByRole('heading', { name: 'Top 5' })).toBeInTheDocument();
+});
+
+it('starts the destination request immediately during route exit motion', () => {
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <AppRouter />
+    </MemoryRouter>,
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: /TOP 5/ }));
+
+  expect(fetchTopFive).toHaveBeenCalledWith(GROUPS[0]);
+});
+
+it('pops the exiting route frame out of layout while the destination mounts', () => {
+  expect(appRouterSource).toMatch(
+    /<AnimatePresence\s+initial=\{false\}\s+mode="popLayout">\s*<motion\.div/,
+  );
 });
 
 it('uses the required accessible name for the primary lookup command', () => {

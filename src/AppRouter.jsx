@@ -25,7 +25,7 @@ export default function AppRouter() {
   const motionVariants = createMotionVariants(Boolean(reduceMotion));
 
   return (
-    <AnimatePresence initial={false} mode="wait">
+    <AnimatePresence initial={false} mode="popLayout">
       <motion.div
         animate="enter"
         className="route-frame"
