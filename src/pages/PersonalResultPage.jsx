@@ -1,45 +1,107 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { lookupParticipant } from '../api/passtivalApi';
+import athleteHero from '../assets/athlete-hero.png';
+import { AsyncState } from '../components/AsyncState';
+import { RecordList } from '../components/RecordList';
+import { TopBar } from '../components/TopBar';
 import { readExamNumber } from '../storage/examSession';
 
+const countFormatter = new Intl.NumberFormat('ko-KR');
+
+function formatCount(value) {
+  const numericValue = typeof value === 'number' ? value : Number(value);
+
+  return Number.isFinite(numericValue)
+    ? countFormatter.format(numericValue)
+    : String(value ?? '');
+}
+
 export function PersonalResultPage() {
+  const navigate = useNavigate();
   const examNumber = readExamNumber();
+  const [requestAttempt, setRequestAttempt] = useState(0);
+  const [requestState, setRequestState] = useState('loading');
   const [participant, setParticipant] = useState(null);
-  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    if (!examNumber) {
+      navigate('/?lookup=1', { replace: true });
+      return undefined;
+    }
+
     let isCurrent = true;
+    setRequestState('loading');
 
     lookupParticipant(examNumber)
       .then((result) => {
         if (isCurrent) {
           setParticipant(result);
+          setRequestState('success');
         }
       })
       .catch(() => {
         if (isCurrent) {
-          setHasError(true);
+          setRequestState('error');
         }
       });
 
     return () => {
       isCurrent = false;
     };
-  }, [examNumber]);
-
-  if (hasError) {
-    return <main><p role="alert">Unable to load your result.</p></main>;
-  }
-
-  if (!participant) {
-    return <main><p role="status">Loading your result...</p></main>;
-  }
+  }, [examNumber, navigate, requestAttempt]);
 
   return (
-    <main>
-      <h1>My ranking</h1>
-      <p>{participant.name}</p>
-      <p>{participant.rank} / {participant.totalCount}</p>
+    <main className="personal-result">
+      <TopBar onBack={() => navigate('/')} />
+
+      {requestState !== 'success' || !participant ? (
+        <AsyncState
+          onRetry={() => setRequestAttempt((attempt) => attempt + 1)}
+          state={requestState}
+        />
+      ) : (
+        <>
+          <div className="personal-result__visual">
+            <img
+              alt=""
+              className="personal-result__athlete"
+              height="600"
+              src={athleteHero}
+              width="390"
+            />
+          </div>
+
+          <div className="personal-result__content">
+            <section className="personal-result__identity">
+              <h1>{participant.name}</h1>
+              <div className="personal-result__metadata" aria-label="참가자 정보">
+                <span>{participant.center}</span>
+                <span>{participant.grade}</span>
+                <span>{participant.gender}</span>
+                <span>{participant.group}</span>
+                <span className="personal-result__exam-number">
+                  <span>수험번호</span>
+                  <span>{participant.examNumber}</span>
+                </span>
+              </div>
+            </section>
+
+            <section className="personal-result__ranking" aria-labelledby="current-rank">
+              <div>
+                <p id="current-rank">현재 순위</p>
+                <strong>{formatCount(participant.rank)}위</strong>
+              </div>
+              <p>총 {formatCount(participant.totalCount)}명 중</p>
+            </section>
+
+            <RecordList records={participant.records} />
+            <p className="personal-result__guidance">
+              실기 기록이 잘못되었다면 근처 기록 작성 스태프에게 문의해 주세요.
+            </p>
+          </div>
+        </>
+      )}
     </main>
   );
 }
