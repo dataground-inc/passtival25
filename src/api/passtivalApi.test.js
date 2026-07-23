@@ -108,7 +108,8 @@ describe('passtival API contract', () => {
   it.each([
     { code: 'NOT_FOUND', error: 'Participant missing' },
     { error: 'Not found' },
-  ])('maps a coded or legacy exact not-found response to NOT_FOUND', async (payload) => {
+    { error: '  not found  ' },
+  ])('maps a coded or legacy case-insensitive not-found response to NOT_FOUND', async (payload) => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
       json: async () => payload,

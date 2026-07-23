@@ -123,7 +123,7 @@ function throwForApiError(payload) {
   }
 
   const isNotFound = backendCode === PasstivalApiError.NOT_FOUND
-    || !backendCode && backendMessage === 'Not found';
+    || !backendCode && backendMessage.toLowerCase() === 'not found';
   throw new PasstivalApiError(
     isNotFound ? PasstivalApiError.NOT_FOUND : PasstivalApiError.NETWORK,
     backendMessage || backendCode,
