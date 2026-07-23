@@ -105,13 +105,55 @@ describe('passtival API contract', () => {
     expect(error).toMatchObject({ code: PasstivalApiError.INVALID_RESPONSE });
   });
 
-  it('maps a not-found response to a stable error code', async () => {
+  it.each([
+    { code: 'NOT_FOUND', error: 'Participant missing' },
+    { error: 'Not found' },
+  ])('maps a coded or legacy exact not-found response to NOT_FOUND', async (payload) => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ error: 'not found' }),
+      json: async () => payload,
     }));
 
     await expect(lookupParticipant('101')).rejects.toEqual(
+      expect.objectContaining({ code: PasstivalApiError.NOT_FOUND }),
+    );
+  });
+
+  it.each([
+    ['lookupParticipant', () => lookupParticipant('101')],
+    ['fetchTopFive', () => fetchTopFive('고3 남자')],
+  ])('maps INTERNAL_ERROR to retryable NETWORK for %s', async (label, operation) => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ code: 'INTERNAL_ERROR', error: 'Sheet not found' }),
+    }));
+
+    await expect(operation()).rejects.toEqual(
+      expect.objectContaining({ code: PasstivalApiError.NETWORK }),
+    );
+  });
+
+  it.each([
+    ['lookupParticipant', () => lookupParticipant('101')],
+    ['fetchTopFive', () => fetchTopFive('고3 남자')],
+  ])('maps uncoded backend errors to retryable NETWORK for %s', async (label, operation) => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ error: 'Unexpected backend failure' }),
+    }));
+
+    await expect(operation()).rejects.toEqual(
+      expect.objectContaining({ code: PasstivalApiError.NETWORK }),
+    );
+  });
+
+  it('maps coded NOT_FOUND to NOT_FOUND for top-five requests', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ code: 'NOT_FOUND', error: 'Not found' }),
+    }));
+
+    await expect(fetchTopFive('고3 남자')).rejects.toEqual(
       expect.objectContaining({ code: PasstivalApiError.NOT_FOUND }),
     );
   });

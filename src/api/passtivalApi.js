@@ -114,15 +114,28 @@ async function requestJson(params) {
   }
 }
 
-function hasApiError(payload) {
-  return typeof payload.error === 'string' && payload.error.trim() !== '';
+function throwForApiError(payload) {
+  const backendCode = typeof payload.code === 'string' ? payload.code : '';
+  const backendMessage = typeof payload.error === 'string' ? payload.error.trim() : '';
+
+  if (!backendCode && !backendMessage) {
+    return;
+  }
+
+  const isNotFound = backendCode === PasstivalApiError.NOT_FOUND
+    || !backendCode && backendMessage === 'Not found';
+  throw new PasstivalApiError(
+    isNotFound ? PasstivalApiError.NOT_FOUND : PasstivalApiError.NETWORK,
+    backendMessage || backendCode,
+  );
 }
 
 export async function lookupParticipant(examNumber) {
   const payload = await requestJson({ mode: 'exam', examNumber: String(examNumber) });
+  throwForApiError(payload);
+
   if (
-    hasApiError(payload)
-    || Object.keys(payload).length === 0
+    Object.keys(payload).length === 0
     || payload.result === null
     || Array.isArray(payload.result) && payload.result.length === 0
   ) {
@@ -134,9 +147,7 @@ export async function lookupParticipant(examNumber) {
 
 export async function fetchTopFive(group) {
   const payload = await requestJson({ mode: 'top5', filter: group });
-  if (hasApiError(payload)) {
-    throw new PasstivalApiError(PasstivalApiError.NOT_FOUND);
-  }
+  throwForApiError(payload);
 
   return normalizeTopFive(payload);
 }

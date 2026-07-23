@@ -51,13 +51,23 @@ function createRow({
   ];
 }
 
-function loadCode(rows, { sheetExists = true } = {}) {
+function loadCode(rows, { sheetExists = true, readThrows = false } = {}) {
   const context = {
     SpreadsheetApp: {
       getActiveSpreadsheet: () => ({
         getSheetByName: (name) => (
           sheetExists && name === 'passtival_raw'
-            ? { getDataRange: () => ({ getValues: () => [HEADER, ...rows] }) }
+            ? {
+              getDataRange: () => ({
+                getValues: () => {
+                  if (readThrows) {
+                    throw new Error('Sheet read failed');
+                  }
+
+                  return [HEADER, ...rows];
+                },
+              }),
+            }
             : null
         ),
       }),
@@ -136,7 +146,38 @@ describe('deployed Apps Script contract', () => {
       result: [{ name: '고2 남자', center: '부천센터' }],
     });
     expect(request(context, { mode: 'top5', filter: 'g3_plus_male' })).toEqual({
+      code: 'INVALID_REQUEST',
       error: 'Invalid filter parameter',
+    });
+  });
+
+  it.each([
+    ['고3 남자', '고3', '남자'],
+    ['고3 여자', '고3', '여자'],
+    ['고2 남자', '고2', '남자'],
+    ['고2 여자', '고2', '여자'],
+  ])('maps the exact %s filter to grade %s and gender %s', (filter, grade, gender) => {
+    const rows = [
+      createRow({
+        examNumber: `${grade}-${gender}`,
+        name: filter,
+        gender,
+        grade,
+        center: `${filter} 센터`,
+        totalScore: 100,
+      }),
+      createRow({
+        examNumber: `${grade}-other`,
+        name: '다른 성별',
+        gender: gender === '남자' ? '여자' : '남자',
+        grade,
+        center: '제외 센터',
+        totalScore: 200,
+      }),
+    ];
+
+    expect(request(loadCode(rows), { mode: 'top5', filter })).toEqual({
+      result: [{ name: filter, center: `${filter} 센터` }],
     });
   });
 
@@ -159,6 +200,37 @@ describe('deployed Apps Script contract', () => {
         { name: 'G', center: 'G센터' },
         { name: 'H', center: 'H센터' },
         { name: 'A', center: 'A센터' },
+      ],
+    });
+  });
+
+  it('excludes boolean, Date, and object scores instead of coercing them to numbers', () => {
+    const rows = [
+      createRow({ examNumber: 1, name: '숫자', gender: '여자', grade: '고2', center: 'A센터', totalScore: 10 }),
+      createRow({ examNumber: 2, name: '문자 숫자', gender: '여자', grade: '고2', center: 'B센터', totalScore: ' 12.5 ' }),
+      createRow({ examNumber: 3, name: '불리언', gender: '여자', grade: '고2', center: 'C센터', totalScore: true }),
+      createRow({
+        examNumber: 4,
+        name: '날짜',
+        gender: '여자',
+        grade: '고2',
+        center: 'D센터',
+        totalScore: new Date('2026-01-01T00:00:00Z'),
+      }),
+      createRow({
+        examNumber: 5,
+        name: '객체',
+        gender: '여자',
+        grade: '고2',
+        center: 'E센터',
+        totalScore: { valueOf: () => 20 },
+      }),
+    ];
+
+    expect(request(loadCode(rows), { mode: 'top5', filter: '고2 여자' })).toEqual({
+      result: [
+        { name: '문자 숫자', center: 'B센터' },
+        { name: '숫자', center: 'A센터' },
       ],
     });
   });
@@ -217,22 +289,41 @@ describe('deployed Apps Script contract', () => {
   });
 
   it.each([
-    { parameters: {}, expected: { error: 'Invalid request' } },
-    { parameters: { mode: 'top5' }, expected: { error: 'Missing filter parameter' } },
-    { parameters: { mode: 'top5', filter: '고1 남자' }, expected: { error: 'Invalid filter parameter' } },
-    { parameters: { mode: 'exam' }, expected: { error: 'Missing examNumber parameter' } },
-    { parameters: { mode: 'exam', examNumber: '999' }, expected: { error: 'Not found' } },
+    { parameters: {}, expected: { code: 'INVALID_REQUEST', error: 'Invalid request' } },
+    {
+      parameters: { mode: 'top5' },
+      expected: { code: 'INVALID_REQUEST', error: 'Missing filter parameter' },
+    },
+    {
+      parameters: { mode: 'top5', filter: '고1 남자' },
+      expected: { code: 'INVALID_REQUEST', error: 'Invalid filter parameter' },
+    },
+    {
+      parameters: { mode: 'exam' },
+      expected: { code: 'INVALID_REQUEST', error: 'Missing examNumber parameter' },
+    },
+    {
+      parameters: { mode: 'exam', examNumber: '999' },
+      expected: { code: 'NOT_FOUND', error: 'Not found' },
+    },
   ])('returns JSON errors for invalid requests: $expected.error', ({ parameters, expected }) => {
     expect(request(loadCode([]), parameters)).toEqual(expected);
   });
 
   it('returns a JSON error when passtival_raw is missing', () => {
     expect(request(loadCode([], { sheetExists: false }), { mode: 'top5', filter: '고3 남자' }))
-      .toEqual({ error: 'Sheet not found' });
+      .toEqual({ code: 'INTERNAL_ERROR', error: 'Sheet not found' });
+  });
+
+  it('returns a JSON INTERNAL_ERROR when reading the sheet throws', () => {
+    expect(request(
+      loadCode([], { readThrows: true }),
+      { mode: 'top5', filter: '고3 남자' },
+    )).toEqual({ code: 'INTERNAL_ERROR', error: 'Internal error' });
   });
 
   it('rejects inherited object keys as unsupported filters', () => {
     expect(request(loadCode([]), { mode: 'top5', filter: 'toString' }))
-      .toEqual({ error: 'Invalid filter parameter' });
+      .toEqual({ code: 'INVALID_REQUEST', error: 'Invalid filter parameter' });
   });
 });

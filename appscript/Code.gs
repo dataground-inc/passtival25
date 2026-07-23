@@ -22,9 +22,19 @@ const TOP5_GROUPS = Object.freeze({
   '고2 여자': Object.freeze({ grade: '고2', gender: '여자' }),
 });
 
+const ERROR_CODE = Object.freeze({
+  NOT_FOUND: 'NOT_FOUND',
+  INVALID_REQUEST: 'INVALID_REQUEST',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+});
+
 function jsonResponse(payload) {
   return ContentService.createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function jsonError(code, error) {
+  return jsonResponse({ code, error });
 }
 
 function normalizedExamNumber(value) {
@@ -33,15 +43,17 @@ function normalizedExamNumber(value) {
 }
 
 function hasFiniteScore(value) {
-  if (value === null || value === undefined) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value);
+  }
+
+  if (typeof value !== 'string') {
     return false;
   }
 
-  if (typeof value === 'string' && value.trim() === '') {
-    return false;
-  }
-
-  return Number.isFinite(Number(value));
+  const trimmed = value.trim();
+  const decimalPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/;
+  return decimalPattern.test(trimmed) && Number.isFinite(Number(trimmed));
 }
 
 function doGet(e) {
@@ -53,7 +65,7 @@ function doGet(e) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
 
     if (!sheet) {
-      return jsonResponse({ error: 'Sheet not found' });
+      return jsonError(ERROR_CODE.INTERNAL_ERROR, 'Sheet not found');
     }
 
     const values = sheet.getDataRange().getValues();
@@ -61,11 +73,11 @@ function doGet(e) {
 
     if (mode === 'top5') {
       if (!filter) {
-        return jsonResponse({ error: 'Missing filter parameter' });
+        return jsonError(ERROR_CODE.INVALID_REQUEST, 'Missing filter parameter');
       }
 
       if (!Object.prototype.hasOwnProperty.call(TOP5_GROUPS, filter)) {
-        return jsonResponse({ error: 'Invalid filter parameter' });
+        return jsonError(ERROR_CODE.INVALID_REQUEST, 'Invalid filter parameter');
       }
 
       const group = TOP5_GROUPS[filter];
@@ -89,7 +101,7 @@ function doGet(e) {
 
     if (mode === 'exam') {
       if (examNumber === undefined || String(examNumber).trim() === '') {
-        return jsonResponse({ error: 'Missing examNumber parameter' });
+        return jsonError(ERROR_CODE.INVALID_REQUEST, 'Missing examNumber parameter');
       }
 
       const requestedExamNumber = normalizedExamNumber(examNumber);
@@ -98,7 +110,7 @@ function doGet(e) {
       ));
 
       if (!match) {
-        return jsonResponse({ error: 'Not found' });
+        return jsonError(ERROR_CODE.NOT_FOUND, 'Not found');
       }
 
       const grade = match[COLUMN.GRADE];
@@ -124,8 +136,8 @@ function doGet(e) {
       });
     }
 
-    return jsonResponse({ error: 'Invalid request' });
+    return jsonError(ERROR_CODE.INVALID_REQUEST, 'Invalid request');
   } catch (error) {
-    return jsonResponse({ error: 'Internal error' });
+    return jsonError(ERROR_CODE.INTERNAL_ERROR, 'Internal error');
   }
 }
