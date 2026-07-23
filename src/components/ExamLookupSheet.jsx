@@ -1,0 +1,149 @@
+import { useEffect, useRef, useState } from 'react';
+import { PasstivalApiError, lookupParticipant } from '../api/passtivalApi';
+
+const FOCUSABLE_SELECTOR = [
+  'button:not([disabled])',
+  'input:not([disabled])',
+  '[href]',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
+  const dialogRef = useRef(null);
+  const inputRef = useRef(null);
+  const [examNumber, setExamNumber] = useState('');
+  const [error, setError] = useState('');
+  const [isRetryable, setIsRetryable] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    inputRef.current?.focus();
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        dialogRef.current?.querySelectorAll(FOCUSABLE_SELECTOR) ?? [],
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements.at(-1);
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      triggerRef?.current?.focus();
+    };
+  }, [onClose, triggerRef]);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const trimmedExamNumber = examNumber.trim();
+    if (!trimmedExamNumber) {
+      setError('수험번호를 입력해 주세요.');
+      setIsRetryable(false);
+      return;
+    }
+
+    setError('');
+    setIsRetryable(false);
+    setIsSubmitting(true);
+
+    try {
+      await lookupParticipant(trimmedExamNumber);
+      setIsSubmitting(false);
+      onSuccess(trimmedExamNumber);
+    } catch (caughtError) {
+      const isNotFound = caughtError?.code === PasstivalApiError.NOT_FOUND;
+      setError(
+        isNotFound
+          ? '일치하는 기록을 찾지 못했어요.'
+          : '기록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+      );
+      setIsRetryable(!isNotFound);
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleBackdropClick(event) {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  }
+
+  return (
+    <div className="exam-sheet-backdrop" onMouseDown={handleBackdropClick}>
+      <section
+        aria-labelledby="exam-sheet-title"
+        aria-modal="true"
+        className="exam-sheet"
+        ref={dialogRef}
+        role="dialog"
+      >
+        <header className="exam-sheet__header">
+          <h2 id="exam-sheet-title">수험번호 입력</h2>
+          <button className="exam-sheet__close" type="button" onClick={onClose}>
+            닫기
+          </button>
+        </header>
+
+        <p className="exam-sheet__guidance" id="exam-sheet-guidance">
+          참가 신청에 사용한 수험번호를 입력해 주세요.
+        </p>
+
+        <form className="exam-sheet__form" onSubmit={handleSubmit}>
+          <label htmlFor="exam-number">수험번호</label>
+          <input
+            aria-describedby="exam-sheet-guidance"
+            aria-errormessage={error ? 'exam-sheet-error' : undefined}
+            aria-invalid={Boolean(error)}
+            autoComplete="off"
+            id="exam-number"
+            inputMode="numeric"
+            onChange={(event) => setExamNumber(event.target.value)}
+            ref={inputRef}
+            type="text"
+            value={examNumber}
+          />
+
+          <div className="exam-sheet__feedback">
+            {error && (
+              <p id="exam-sheet-error" role="alert">
+                {error}
+              </p>
+            )}
+          </div>
+
+          <button
+            className="exam-sheet__submit"
+            disabled={isSubmitting}
+            type="submit"
+          >
+            {isSubmitting ? '확인 중' : isRetryable ? '다시 시도하기' : '기록 확인하기'}
+          </button>
+        </form>
+      </section>
+    </div>
+  );
+}

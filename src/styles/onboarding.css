@@ -1,0 +1,72 @@
+.onboarding {
+  position: relative;
+  width: min(100%, var(--page-max-width));
+  min-height: 100svh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.onboarding__title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: min(358px, calc(100% - (var(--page-gutter) * 2)));
+  height: auto;
+  aspect-ratio: 358 / 238;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+}
+
+.onboarding__actions {
+  position: absolute;
+  right: var(--page-gutter);
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: var(--page-gutter);
+  display: grid;
+  gap: 12px;
+}
+
+.onboarding__button {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  color: var(--color-gray-6);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+  transition: background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+.onboarding__button:active {
+  opacity: 0.72;
+}
+
+.onboarding__button--primary {
+  border: 0;
+  background: rgb(1 73 239 / 20%);
+}
+
+.onboarding__button--primary:hover {
+  background: rgb(1 73 239 / 30%);
+}
+
+.onboarding__button--secondary {
+  border: 1px solid rgb(248 248 252 / 24%);
+  background: transparent;
+  color: var(--color-gray-4);
+}
+
+.onboarding__button--secondary:hover {
+  border-color: rgb(248 248 252 / 44%);
+  background: rgb(248 248 252 / 6%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding__button {
+    transition: none;
+  }
+}

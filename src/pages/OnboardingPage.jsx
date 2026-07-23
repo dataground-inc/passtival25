@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { lookupParticipant } from '../api/passtivalApi';
+import passtivalTitle from '../assets/passtival-title.png';
+import { ExamLookupSheet } from '../components/ExamLookupSheet';
 import { saveExamNumber } from '../storage/examSession';
 
 export function OnboardingPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLookupOpen, setIsLookupOpen] = useState(false);
-  const [examNumber, setExamNumber] = useState('');
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const lookupTriggerRef = useRef(null);
 
   useEffect(() => {
     if (searchParams.get('lookup') !== '1') {
@@ -23,57 +22,46 @@ export function OnboardingPage() {
     setSearchParams(nextSearchParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const trimmedExamNumber = examNumber.trim();
-    if (!trimmedExamNumber) {
-      setError('\uC218\uD5D8\uBC88\uD638\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.');
-      return;
-    }
-
-    setError('');
-    setIsSubmitting(true);
-
-    try {
-      await lookupParticipant(trimmedExamNumber);
-      saveExamNumber(trimmedExamNumber);
-      navigate('/my-ranking');
-    } catch {
-      setError('\uC218\uD5D8\uBC88\uD638\uB97C \uD655\uC778\uD558\uACE0 \uB2E4\uC2DC \uC2DC\uB3C4\uD574 \uC8FC\uC138\uC694.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  function handleLookupSuccess(examNumber) {
+    saveExamNumber(examNumber);
+    navigate('/my-ranking');
   }
 
   return (
-    <main>
-      <h1>PASSTIVAL</h1>
-      <button type="button" onClick={() => setIsLookupOpen(true)}>
-        {'\uB0B4 \uC21C\uC704 \uD655\uC778\uD558\uAE30'}
-      </button>
+    <main className="onboarding">
+      <h1 className="sr-only">PASSTIVAL</h1>
+      <img
+        alt="BEYOND LIMITS. BEYOND PASS."
+        className="onboarding__title"
+        height="238"
+        src={passtivalTitle}
+        width="358"
+      />
+
+      <div className="onboarding__actions">
+        <button
+          className="onboarding__button onboarding__button--primary"
+          onClick={() => setIsLookupOpen(true)}
+          ref={lookupTriggerRef}
+          type="button"
+        >
+          내 순위 확인하기
+        </button>
+        <button
+          className="onboarding__button onboarding__button--secondary"
+          onClick={() => navigate('/top5')}
+          type="button"
+        >
+          TOP 5 순위
+        </button>
+      </div>
 
       {isLookupOpen && (
-        <section aria-labelledby="exam-number-heading" aria-modal="true" role="dialog">
-          <h2 id="exam-number-heading">{'\uC218\uD5D8\uBC88\uD638 \uC785\uB825'}</h2>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="exam-number">{'\uC218\uD5D8\uBC88\uD638'}</label>
-            <input
-              autoComplete="off"
-              id="exam-number"
-              onChange={(event) => setExamNumber(event.target.value)}
-              type="text"
-              value={examNumber}
-            />
-            {error && <p role="alert">{error}</p>}
-            <button disabled={isSubmitting} type="submit">
-              {isSubmitting ? '\uC870\uD68C \uC911' : '\uC870\uD68C'}
-            </button>
-            <button type="button" onClick={() => setIsLookupOpen(false)}>
-              {'\uB2EB\uAE30'}
-            </button>
-          </form>
-        </section>
+        <ExamLookupSheet
+          onClose={() => setIsLookupOpen(false)}
+          onSuccess={handleLookupSuccess}
+          triggerRef={lookupTriggerRef}
+        />
       )}
     </main>
   );

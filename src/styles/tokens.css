@@ -1,0 +1,14 @@
+:root {
+  --color-bg: #000;
+  --color-navy: #040b20;
+  --color-blue: #0149ef;
+  --color-gray-6: #f8f8fc;
+  --color-gray-4: #e4e6f0;
+  --color-gray-3: #b7b9c9;
+  --color-danger: #ff6b74;
+  --font-sans: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --page-max-width: 390px;
+  --page-gutter: 16px;
+  --control-height: 48px;
+  --radius-control: 12px;
+}
