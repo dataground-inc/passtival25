@@ -23,16 +23,6 @@
   place-items: center;
 }
 
-.top-bar__back span {
-  display: block;
-  height: 24px;
-  font-family: Arial, sans-serif;
-  font-size: 30px;
-  font-weight: 300;
-  line-height: 20px;
-  transform: translateY(-1px);
-}
-
 .top-bar__back:hover {
   background: rgb(248 248 252 / 8%);
 }

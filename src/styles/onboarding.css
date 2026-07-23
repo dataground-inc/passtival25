@@ -1,22 +1,20 @@
 .onboarding {
   position: relative;
+  display: grid;
   width: min(100%, var(--page-max-width));
   min-height: 100svh;
   margin: 0 auto;
   overflow: hidden;
   background: var(--color-bg);
+  place-items: center;
 }
 
 .onboarding__title {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   display: block;
   width: min(358px, calc(100% - (var(--page-gutter) * 2)));
   height: auto;
   aspect-ratio: 358 / 238;
   object-fit: contain;
-  transform: translate(-50%, -50%);
 }
 
 .onboarding__actions {

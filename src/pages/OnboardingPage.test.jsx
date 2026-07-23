@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
@@ -5,6 +6,11 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { lookupParticipant } from '../api/passtivalApi';
 import { readExamNumber } from '../storage/examSession';
 import { OnboardingPage } from './OnboardingPage';
+
+const onboardingStyles = readFileSync(
+  'src/styles/onboarding.css',
+  'utf8',
+);
 
 vi.mock('../api/passtivalApi', async () => {
   const actual = await vi.importActual('../api/passtivalApi');
@@ -42,11 +48,23 @@ function renderPage(initialEntry = '/') {
 it('renders the local title artwork and both exact entry commands', () => {
   renderPage();
 
-  expect(
-    screen.getByRole('img', { name: 'BEYOND LIMITS. BEYOND PASS.' }),
-  ).toHaveAttribute('src', expect.stringContaining('passtival-title.png'));
+  const title = screen.getByRole('img', { name: 'BEYOND LIMITS. BEYOND PASS.' });
+
+  expect(title).toHaveAttribute('src', expect.stringContaining('passtival-title.png'));
+  expect(title).toHaveAttribute('width', '358');
+  expect(title).toHaveAttribute('height', '238');
   expect(screen.getByRole('button', { name: '내 순위 확인하기' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'TOP 5 순위' })).toBeInTheDocument();
+});
+
+it('centers the title in layout flow without competing with motion transforms', () => {
+  const onboardingRule = onboardingStyles.match(/\.onboarding\s*\{([^}]*)\}/)?.[1];
+  const titleRule = onboardingStyles.match(/\.onboarding__title\s*\{([^}]*)\}/)?.[1];
+
+  expect(onboardingRule).toContain('display: grid;');
+  expect(onboardingRule).toContain('place-items: center;');
+  expect(titleRule).not.toMatch(/\btransform\s*:/);
+  expect(titleRule).not.toMatch(/\bleft\s*:/);
 });
 
 it('opens the exam lookup sheet from the primary command', async () => {

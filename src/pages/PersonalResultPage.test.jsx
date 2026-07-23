@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
@@ -5,6 +6,11 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { lookupParticipant } from '../api/passtivalApi';
 import { saveExamNumber } from '../storage/examSession';
 import { PersonalResultPage } from './PersonalResultPage';
+
+const personalResultStyles = readFileSync(
+  'src/styles/personal-result.css',
+  'utf8',
+);
 
 vi.mock('../api/passtivalApi', async () => {
   const actual = await vi.importActual('../api/passtivalApi');
@@ -55,6 +61,15 @@ function renderPage(initialEntry = '/my-ranking') {
     </MemoryRouter>,
   );
 }
+
+it('gives guidance the full result content width while preserving natural wrapping', () => {
+  const guidanceRule = personalResultStyles.match(
+    /\.personal-result__guidance\s*\{([^}]*)\}/,
+  )?.[1];
+
+  expect(guidanceRule).toContain('margin: 11px 0 0;');
+  expect(guidanceRule).not.toMatch(/\bwhite-space\s*:\s*nowrap/);
+});
 
 it('restores the session and renders every required participant result field', async () => {
   saveExamNumber('00123');

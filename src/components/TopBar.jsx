@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { createMotionVariants } from '../motion';
 
 export function TopBar({ onBack, title = '2026 PASSTIVAL' }) {
@@ -14,7 +15,7 @@ export function TopBar({ onBack, title = '2026 PASSTIVAL' }) {
         type="button"
         whileTap={motionVariants.press}
       >
-        <span aria-hidden="true">‹</span>
+        <ArrowLeft aria-hidden="true" size={24} strokeWidth={1.75} />
       </motion.button>
       <p className="top-bar__title">{title}</p>
     </header>
