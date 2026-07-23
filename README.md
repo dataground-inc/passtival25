@@ -43,6 +43,25 @@ VITE_API_BASE=https://example.com/passtival-api
 
 Restart the development server after changing environment variables.
 
+## Apps Script API
+
+The deployable spreadsheet-bound API source is
+[`appscript/Code.gs`](appscript/Code.gs). It reads the `passtival_raw` sheet.
+
+To update the deployed API:
+
+1. Open the Apps Script project bound to the PASSTIVAL spreadsheet.
+2. Replace the project's `Code.gs` with `appscript/Code.gs`.
+3. Select **Deploy > Manage deployments**, edit the web app deployment, and
+   choose **New version**.
+4. Deploy it with access configured for the application audience.
+5. Verify the `/exec` URL with both `mode=exam` and `mode=top5`.
+
+Editing or saving Apps Script source does not update the live web app by
+itself. A new deployment version must be created after every API source
+change. The frontend uses the current production `/exec` URL by default;
+`VITE_API_BASE` remains available to target another deployment.
+
 ## Routes
 
 The application uses `HashRouter`, so routes remain compatible with static

@@ -1,0 +1,131 @@
+const SHEET_NAME = 'passtival_raw';
+
+const COLUMN = Object.freeze({
+  EXAM_NUMBER: 0,
+  NAME: 1,
+  GENDER: 2,
+  GRADE: 3,
+  CENTER: 4,
+  STANDING_LONG_JUMP: 5,
+  BACK_STRENGTH: 6,
+  RUN_10M: 7,
+  MEDICINE_BALL: 8,
+  SIT_AND_REACH: 9,
+  TOTAL_SCORE: 10,
+  RANK: 11,
+});
+
+const TOP5_GROUPS = Object.freeze({
+  '고3 남자': Object.freeze({ grade: '고3', gender: '남자' }),
+  '고3 여자': Object.freeze({ grade: '고3', gender: '여자' }),
+  '고2 남자': Object.freeze({ grade: '고2', gender: '남자' }),
+  '고2 여자': Object.freeze({ grade: '고2', gender: '여자' }),
+});
+
+function jsonResponse(payload) {
+  return ContentService.createTextOutput(JSON.stringify(payload))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function normalizedExamNumber(value) {
+  const trimmed = String(value === null || value === undefined ? '' : value).trim();
+  return /^\d+$/.test(trimmed) ? trimmed.replace(/^0+(?=\d)/, '') : trimmed;
+}
+
+function hasFiniteScore(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+
+  if (typeof value === 'string' && value.trim() === '') {
+    return false;
+  }
+
+  return Number.isFinite(Number(value));
+}
+
+function doGet(e) {
+  try {
+    const parameters = e && e.parameter ? e.parameter : {};
+    const mode = parameters.mode;
+    const examNumber = parameters.examNumber;
+    const filter = parameters.filter;
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+
+    if (!sheet) {
+      return jsonResponse({ error: 'Sheet not found' });
+    }
+
+    const values = sheet.getDataRange().getValues();
+    const rows = values.slice(1);
+
+    if (mode === 'top5') {
+      if (!filter) {
+        return jsonResponse({ error: 'Missing filter parameter' });
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(TOP5_GROUPS, filter)) {
+        return jsonResponse({ error: 'Invalid filter parameter' });
+      }
+
+      const group = TOP5_GROUPS[filter];
+      const top5 = rows
+        .filter((row) => (
+          row[COLUMN.GRADE] === group.grade
+          && row[COLUMN.GENDER] === group.gender
+          && hasFiniteScore(row[COLUMN.TOTAL_SCORE])
+        ))
+        .sort((left, right) => (
+          Number(right[COLUMN.TOTAL_SCORE]) - Number(left[COLUMN.TOTAL_SCORE])
+        ))
+        .slice(0, 5)
+        .map((row) => ({
+          name: row[COLUMN.NAME],
+          center: row[COLUMN.CENTER],
+        }));
+
+      return jsonResponse({ result: top5 });
+    }
+
+    if (mode === 'exam') {
+      if (examNumber === undefined || String(examNumber).trim() === '') {
+        return jsonResponse({ error: 'Missing examNumber parameter' });
+      }
+
+      const requestedExamNumber = normalizedExamNumber(examNumber);
+      const match = rows.find((row) => (
+        normalizedExamNumber(row[COLUMN.EXAM_NUMBER]) === requestedExamNumber
+      ));
+
+      if (!match) {
+        return jsonResponse({ error: 'Not found' });
+      }
+
+      const grade = match[COLUMN.GRADE];
+      const gender = match[COLUMN.GENDER];
+      const totalCount = rows.filter((row) => (
+        row[COLUMN.GRADE] === grade && row[COLUMN.GENDER] === gender
+      )).length;
+
+      return jsonResponse({
+        examNumber: match[COLUMN.EXAM_NUMBER],
+        name: match[COLUMN.NAME],
+        center: match[COLUMN.CENTER],
+        gender,
+        grade,
+        group: `${grade} ${gender}`,
+        jemul: match[COLUMN.STANDING_LONG_JUMP],
+        backStrength: match[COLUMN.BACK_STRENGTH],
+        run10m: match[COLUMN.RUN_10M],
+        medicineBall: match[COLUMN.MEDICINE_BALL],
+        sitAndReach: match[COLUMN.SIT_AND_REACH],
+        rank: match[COLUMN.RANK],
+        totalCount,
+      });
+    }
+
+    return jsonResponse({ error: 'Invalid request' });
+  } catch (error) {
+    return jsonResponse({ error: 'Internal error' });
+  }
+}

@@ -138,16 +138,18 @@ describe('passtival API contract', () => {
     );
   });
 
-  it('URL-encodes top-five groups', async () => {
+  it('uses the deployed default endpoint and URL-encodes an exact group', async () => {
     const fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ result: [] }),
     });
     vi.stubGlobal('fetch', fetch);
 
-    await fetchTopFive('고3 남자&test');
+    await fetchTopFive('고3 남자');
 
-    expect(fetch.mock.calls[0][0]).toContain('filter=%EA%B3%A03+%EB%82%A8%EC%9E%90%26test');
+    expect(fetch).toHaveBeenCalledWith(
+      'https://script.google.com/macros/s/AKfycbxwQUaBUsLgm901g3FlfepQ2peKFWJEzdtOU8FAJKnbw5OyJ_VCCmHN-yA6c0hITZR8/exec?mode=top5&filter=%EA%B3%A03+%EB%82%A8%EC%9E%90',
+    );
   });
 
   it('maps network and invalid responses to stable error codes', async () => {

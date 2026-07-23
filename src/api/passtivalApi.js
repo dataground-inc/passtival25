@@ -1,5 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE
-  || 'https://script.google.com/macros/s/AKfycbx223VNNJuM-xB_h0k5FlylFO8rZ_iKTbNCuPxfWkmYdCaumyt6wUJJQCEuATtxhHwr/exec';
+  || 'https://script.google.com/macros/s/AKfycbxwQUaBUsLgm901g3FlfepQ2peKFWJEzdtOU8FAJKnbw5OyJ_VCCmHN-yA6c0hITZR8/exec';
 
 export const GROUPS = ['고3 남자', '고3 여자', '고2 남자', '고2 여자'];
 
