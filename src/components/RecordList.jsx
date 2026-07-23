@@ -1,3 +1,5 @@
+import { formatDisplayValue } from '../utils/displayValue';
+
 const RECORDS = [
   ['standingLongJump', '제자리멀리뛰기'],
   ['backStrength', '배근력'],
@@ -5,14 +7,6 @@ const RECORDS = [
   ['medicineBall', '메디신볼던지기'],
   ['sitAndReach', '좌전굴(선택)'],
 ];
-
-function displayRecord(value) {
-  return value === null
-    || value === undefined
-    || typeof value === 'string' && value.trim() === ''
-    ? '미응시'
-    : String(value);
-}
 
 export function RecordList({ records = {} }) {
   return (
@@ -22,7 +16,7 @@ export function RecordList({ records = {} }) {
         {RECORDS.map(([key, label]) => (
           <div className="record-list__row" key={key} role="group">
             <dt>{label}</dt>
-            <dd>{displayRecord(records[key])}</dd>
+            <dd>{formatDisplayValue(records[key])}</dd>
           </div>
         ))}
       </dl>
