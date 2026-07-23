@@ -102,7 +102,7 @@ describe('deployed Apps Script contract', () => {
     expect(loadCode([]).doGet).toBeTypeOf('function');
   });
 
-  it('accepts only exact supported groups and never broadens grade membership', () => {
+  it('maps 고1·고2 and 고3·재수이상 to their respective exact groups', () => {
     const rows = [
       createRow({
         examNumber: 301,
@@ -140,10 +140,16 @@ describe('deployed Apps Script contract', () => {
     const context = loadCode(rows);
 
     expect(request(context, { mode: 'top5', filter: '고3 남자' })).toEqual({
-      result: [{ name: '고3 남자', center: '강남센터' }],
+      result: [
+        { name: '재수 남자', center: '분당센터' },
+        { name: '고3 남자', center: '강남센터' },
+      ],
     });
     expect(request(context, { mode: 'top5', filter: '고2 남자' })).toEqual({
-      result: [{ name: '고2 남자', center: '부천센터' }],
+      result: [
+        { name: '고1 남자', center: '노원센터' },
+        { name: '고2 남자', center: '부천센터' },
+      ],
     });
     expect(request(context, { mode: 'top5', filter: 'g3_plus_male' })).toEqual({
       code: 'INVALID_REQUEST',
@@ -286,6 +292,86 @@ describe('deployed Apps Script contract', () => {
       rank: 1,
       totalCount: 2,
     });
+  });
+
+  it('counts 재수이상 and 고3 participants together for a 고3 rank group', () => {
+    const rows = [
+      createRow({
+        examNumber: 301,
+        name: '고3 여자',
+        gender: '여자',
+        grade: '고3',
+        center: '강남센터',
+        totalScore: 400,
+        rank: 2,
+      }),
+      createRow({
+        examNumber: 302,
+        name: '재수 여자',
+        gender: '여자',
+        grade: '재수이상',
+        center: '노원센터',
+        totalScore: 410,
+        rank: 1,
+      }),
+      createRow({
+        examNumber: 303,
+        name: '고3 남자',
+        gender: '남자',
+        grade: '고3',
+        center: '부천센터',
+        totalScore: 420,
+        rank: 1,
+      }),
+    ];
+
+    expect(request(loadCode(rows), { mode: 'exam', examNumber: '302' }))
+      .toMatchObject({
+        grade: '재수이상',
+        gender: '여자',
+        group: '고3 여자',
+        totalCount: 2,
+      });
+  });
+
+  it('counts 고1 and 고2 participants together for a 고2 rank group', () => {
+    const rows = [
+      createRow({
+        examNumber: 201,
+        name: '고2 남자',
+        gender: '남자',
+        grade: '고2',
+        center: '강남센터',
+        totalScore: 400,
+        rank: 2,
+      }),
+      createRow({
+        examNumber: 101,
+        name: '고1 남자',
+        gender: '남자',
+        grade: '고1',
+        center: '노원센터',
+        totalScore: 410,
+        rank: 1,
+      }),
+      createRow({
+        examNumber: 102,
+        name: '고1 여자',
+        gender: '여자',
+        grade: '고1',
+        center: '부천센터',
+        totalScore: 420,
+        rank: 1,
+      }),
+    ];
+
+    expect(request(loadCode(rows), { mode: 'exam', examNumber: '101' }))
+      .toMatchObject({
+        grade: '고1',
+        gender: '남자',
+        group: '고2 남자',
+        totalCount: 2,
+      });
   });
 
   it.each([

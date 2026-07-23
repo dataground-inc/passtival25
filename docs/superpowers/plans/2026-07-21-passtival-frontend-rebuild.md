@@ -11,6 +11,7 @@
 ## Global Constraints
 
 - Exact Apps Script group values: `고3 남자`, `고3 여자`, `고2 남자`, `고2 여자`.
+- Group membership: `고3` labels include `고3` and `재수이상`; `고2` labels include `고1` and `고2`, separated by gender.
 - The onboarding primary command is exactly `내 순위 확인하기`.
 - Hash routes are `#/`, `#/my-ranking`, and `#/top5` for GitHub Pages compatibility.
 - Personal total score must never be rendered.

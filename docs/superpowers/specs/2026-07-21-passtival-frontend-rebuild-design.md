@@ -136,7 +136,7 @@ Normalized TOP 5 row:
 
 The Apps Script personal lookup must return gender, grade, center, group, rank, total participant count, and the five records. The old `run20m` mapping is replaced by `sitAndReach`. TOP 5 continues to use total score internally but does not expose it in the UI.
 
-The exact group strings sent to and received from Apps Script are `고3 남자`, `고3 여자`, `고2 남자`, and `고2 여자`. The frontend does not translate these into broader `이상` or `이하` labels.
+The exact group strings sent to and received from Apps Script are `고3 남자`, `고3 여자`, `고2 남자`, and `고2 여자`. The labels remain exact, while membership follows the event bands: `고3` groups include `고3` and `재수이상`, and `고2` groups include `고1` and `고2`, always separated by gender.
 
 ## Component Boundaries
 

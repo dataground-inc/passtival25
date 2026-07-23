@@ -16,10 +16,10 @@ const COLUMN = Object.freeze({
 });
 
 const TOP5_GROUPS = Object.freeze({
-  '고3 남자': Object.freeze({ grade: '고3', gender: '남자' }),
-  '고3 여자': Object.freeze({ grade: '고3', gender: '여자' }),
-  '고2 남자': Object.freeze({ grade: '고2', gender: '남자' }),
-  '고2 여자': Object.freeze({ grade: '고2', gender: '여자' }),
+  '고3 남자': Object.freeze({ grades: ['고3', '재수이상'], gender: '남자' }),
+  '고3 여자': Object.freeze({ grades: ['고3', '재수이상'], gender: '여자' }),
+  '고2 남자': Object.freeze({ grades: ['고1', '고2'], gender: '남자' }),
+  '고2 여자': Object.freeze({ grades: ['고1', '고2'], gender: '여자' }),
 });
 
 const ERROR_CODE = Object.freeze({
@@ -56,6 +56,17 @@ function hasFiniteScore(value) {
   return decimalPattern.test(trimmed) && Number.isFinite(Number(trimmed));
 }
 
+function matchesGroup(row, group) {
+  return group.grades.includes(row[COLUMN.GRADE])
+    && row[COLUMN.GENDER] === group.gender;
+}
+
+function findGroup(grade, gender) {
+  return Object.entries(TOP5_GROUPS).find(([, group]) => (
+    group.grades.includes(grade) && group.gender === gender
+  ));
+}
+
 function doGet(e) {
   try {
     const parameters = e && e.parameter ? e.parameter : {};
@@ -83,9 +94,7 @@ function doGet(e) {
       const group = TOP5_GROUPS[filter];
       const top5 = rows
         .filter((row) => (
-          row[COLUMN.GRADE] === group.grade
-          && row[COLUMN.GENDER] === group.gender
-          && hasFiniteScore(row[COLUMN.TOTAL_SCORE])
+          matchesGroup(row, group) && hasFiniteScore(row[COLUMN.TOTAL_SCORE])
         ))
         .sort((left, right) => (
           Number(right[COLUMN.TOTAL_SCORE]) - Number(left[COLUMN.TOTAL_SCORE])
@@ -115,9 +124,13 @@ function doGet(e) {
 
       const grade = match[COLUMN.GRADE];
       const gender = match[COLUMN.GENDER];
-      const totalCount = rows.filter((row) => (
-        row[COLUMN.GRADE] === grade && row[COLUMN.GENDER] === gender
-      )).length;
+      const groupEntry = findGroup(grade, gender);
+      const [groupName, group] = groupEntry || [`${grade} ${gender}`, null];
+      const totalCount = group
+        ? rows.filter((row) => matchesGroup(row, group)).length
+        : rows.filter((row) => (
+          row[COLUMN.GRADE] === grade && row[COLUMN.GENDER] === gender
+        )).length;
 
       return jsonResponse({
         examNumber: match[COLUMN.EXAM_NUMBER],
@@ -125,7 +138,7 @@ function doGet(e) {
         center: match[COLUMN.CENTER],
         gender,
         grade,
-        group: `${grade} ${gender}`,
+        group: groupName,
         jemul: match[COLUMN.STANDING_LONG_JUMP],
         backStrength: match[COLUMN.BACK_STRENGTH],
         run10m: match[COLUMN.RUN_10M],

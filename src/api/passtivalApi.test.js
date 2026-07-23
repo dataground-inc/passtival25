@@ -181,7 +181,7 @@ describe('passtival API contract', () => {
     );
   });
 
-  it('uses the deployed default endpoint and URL-encodes an exact group', async () => {
+  it('uses the configured deployment endpoint and URL-encodes an exact group', async () => {
     const fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ result: [] }),
@@ -190,9 +190,11 @@ describe('passtival API contract', () => {
 
     await fetchTopFive('고3 남자');
 
-    expect(fetch).toHaveBeenCalledWith(
-      'https://script.google.com/macros/s/AKfycbxwQUaBUsLgm901g3FlfepQ2peKFWJEzdtOU8FAJKnbw5OyJ_VCCmHN-yA6c0hITZR8/exec?mode=top5&filter=%EA%B3%A03+%EB%82%A8%EC%9E%90',
-    );
+    const requestUrl = new URL(fetch.mock.calls[0][0]);
+
+    expect(requestUrl.pathname).toMatch(/\/exec$/);
+    expect(requestUrl.searchParams.get('mode')).toBe('top5');
+    expect(requestUrl.searchParams.get('filter')).toBe('고3 남자');
   });
 
   it('maps network and invalid responses to stable error codes', async () => {
