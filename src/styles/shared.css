@@ -12,6 +12,13 @@
   color: var(--color-gray-6);
 }
 
+.top-bar--fixed {
+  position: fixed;
+  z-index: 20;
+  width: min(100%, var(--page-max-width));
+  margin: 0 auto;
+}
+
 .top-bar__back {
   display: grid;
   width: 48px;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { lookupParticipant } from '../api/passtivalApi';
+import athleteHeroFemale from '../assets/athlete-hero-female.png';
 import athleteHero from '../assets/athlete-hero.png';
 import { AsyncState } from '../components/AsyncState';
 import { RecordList } from '../components/RecordList';
@@ -31,6 +32,22 @@ function formatTotalCount(value) {
   );
 }
 
+function normalizeStudentGender(value) {
+  if (typeof value !== 'string') {
+    return '미응시';
+  }
+
+  if (value.includes('여')) {
+    return '여학생';
+  }
+
+  if (value.includes('남')) {
+    return '남학생';
+  }
+
+  return '미응시';
+}
+
 export function PersonalResultPage() {
   const navigate = useNavigate();
   const examNumber = readExamNumber();
@@ -39,6 +56,10 @@ export function PersonalResultPage() {
   const [participant, setParticipant] = useState(null);
   const reduceMotion = useReducedMotion();
   const motionVariants = createMotionVariants(Boolean(reduceMotion));
+  const genderLabel = normalizeStudentGender(participant?.gender);
+  const athleteHeroSource = genderLabel === '여학생'
+    ? athleteHeroFemale
+    : athleteHero;
 
   useEffect(() => {
     if (!examNumber) {
@@ -69,7 +90,7 @@ export function PersonalResultPage() {
 
   return (
     <main className="personal-result">
-      <TopBar onBack={() => navigate('/')} />
+      <TopBar fixed onBack={() => navigate('/')} />
 
       {requestState !== 'success' || !participant ? (
         <AsyncState
@@ -88,7 +109,7 @@ export function PersonalResultPage() {
               alt=""
               className="personal-result__athlete"
               height="600"
-              src={athleteHero}
+              src={athleteHeroSource}
               width="390"
             />
           </motion.div>
@@ -107,12 +128,7 @@ export function PersonalResultPage() {
               <div className="personal-result__metadata" aria-label="참가자 정보">
                 <span>{formatDisplayValue(participant.center)}</span>
                 <span>{formatDisplayValue(participant.grade)}</span>
-                <span>{formatDisplayValue(participant.gender)}</span>
-                <span>{formatDisplayValue(participant.group)}</span>
-                <span className="personal-result__exam-number">
-                  <span>수험번호</span>
-                  <span>{formatDisplayValue(participant.examNumber)}</span>
-                </span>
+                <span>{genderLabel}</span>
               </div>
             </motion.section>
 

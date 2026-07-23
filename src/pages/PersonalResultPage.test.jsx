@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { lookupParticipant } from '../api/passtivalApi';
+import athleteHeroFemale from '../assets/athlete-hero-female.png';
+import athleteHero from '../assets/athlete-hero.png';
 import { saveExamNumber } from '../storage/examSession';
 import { PersonalResultPage } from './PersonalResultPage';
 
@@ -71,6 +73,17 @@ it('gives guidance the full result content width while preserving natural wrappi
   expect(guidanceRule).not.toMatch(/\bwhite-space\s*:\s*nowrap/);
 });
 
+it('matches the Figma participant metadata typography', () => {
+  const metadataRule = personalResultStyles.match(
+    /\.personal-result__metadata\s*\{([^}]*)\}/,
+  )?.[1];
+
+  expect(metadataRule).toContain('color: var(--color-gray-4);');
+  expect(metadataRule).toContain('font-size: 14px;');
+  expect(metadataRule).toContain('font-weight: 400;');
+  expect(metadataRule).toContain('line-height: 18px;');
+});
+
 it('restores the session and renders every required participant result field', async () => {
   saveExamNumber('00123');
   lookupParticipant.mockResolvedValue(participant);
@@ -79,16 +92,67 @@ it('restores the session and renders every required participant result field', a
 
   expect(await screen.findByRole('heading', { name: '한지훈' })).toBeInTheDocument();
   expect(lookupParticipant).toHaveBeenCalledWith('00123');
-  expect(screen.getByText('00123')).toBeInTheDocument();
-  expect(screen.getByText('서울센터')).toBeInTheDocument();
-  expect(screen.getByText('고3')).toBeInTheDocument();
-  expect(screen.getByText('남학생')).toBeInTheDocument();
-  expect(screen.getByText('고3 남자')).toBeInTheDocument();
   expect(screen.getByText('233위')).toBeInTheDocument();
   expect(screen.getByText('총 1,233명 중')).toBeInTheDocument();
   expect(screen.getByText('메디신볼던지기').nextElementSibling).toHaveTextContent('8.9');
   expect(screen.queryByText('999')).not.toBeInTheDocument();
 });
+
+it('shows only center, grade, and normalized male gender in metadata', async () => {
+  saveExamNumber('00123');
+  lookupParticipant.mockResolvedValue({ ...participant, gender: '남자' });
+
+  const { container } = renderPage();
+
+  expect(await screen.findByRole('heading', { name: '한지훈' })).toBeInTheDocument();
+
+  const metadata = screen.getByLabelText('참가자 정보');
+  expect(
+    [...metadata.querySelectorAll(':scope > span')].map((field) => field.textContent),
+  ).toEqual(['서울센터', '고3', '남학생']);
+  expect(within(metadata).queryByText('고3 남자')).not.toBeInTheDocument();
+  expect(screen.queryByText('00123')).not.toBeInTheDocument();
+  expect(container.querySelector('.personal-result__athlete')).toHaveAttribute(
+    'src',
+    athleteHero,
+  );
+});
+
+it.each(['여자', '여학생'])(
+  'normalizes female gender %s and uses the female hero',
+  async (gender) => {
+    saveExamNumber('00123');
+    lookupParticipant.mockResolvedValue({ ...participant, gender });
+
+    const { container } = renderPage();
+
+    expect(await screen.findByRole('heading', { name: '한지훈' })).toBeInTheDocument();
+    expect(screen.getByLabelText('참가자 정보')).toHaveTextContent('여학생');
+    expect(container.querySelector('.personal-result__athlete')).toHaveAttribute(
+      'src',
+      athleteHeroFemale,
+    );
+  },
+);
+
+it.each([undefined, '', '기타'])(
+  'normalizes missing or unknown gender %p as 미응시',
+  async (gender) => {
+    saveExamNumber('00123');
+    lookupParticipant.mockResolvedValue({ ...participant, gender });
+
+    const { container } = renderPage();
+
+    expect(await screen.findByRole('heading', { name: '한지훈' })).toBeInTheDocument();
+
+    const metadata = screen.getByLabelText('참가자 정보');
+    expect(within(metadata).getByText('미응시')).toBeInTheDocument();
+    expect(container.querySelector('.personal-result__athlete')).toHaveAttribute(
+      'src',
+      athleteHero,
+    );
+  },
+);
 
 it('renders missing identity and rank values as 미응시 without empty or zero output', async () => {
   saveExamNumber('00123');
@@ -109,7 +173,7 @@ it('renders missing identity and rank values as 미응시 without empty or zero 
   expect(await screen.findByRole('heading', { name: '미응시' })).toBeInTheDocument();
 
   const metadata = screen.getByLabelText('참가자 정보');
-  expect(within(metadata).getAllByText('미응시')).toHaveLength(5);
+  expect(within(metadata).getAllByText('미응시')).toHaveLength(3);
   expect(
     [...metadata.querySelectorAll(':scope > span')].every((field) => field.textContent.trim()),
   ).toBe(true);
@@ -130,7 +194,7 @@ it('keeps the result shell mounted while loading', () => {
 
   expect(screen.getByRole('main')).toHaveClass('personal-result');
   expect(screen.getByRole('status')).toHaveTextContent('결과를 불러오는 중입니다.');
-  expect(screen.getByRole('banner')).toBeInTheDocument();
+  expect(screen.getByRole('banner')).toHaveClass('top-bar--fixed');
 });
 
 it('shows a retry action after a service failure and loads the next attempt', async () => {

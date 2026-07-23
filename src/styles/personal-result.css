@@ -55,8 +55,8 @@
   align-items: center;
   gap: 2px 0;
   margin-top: 6px;
-  color: var(--color-gray-3);
-  font-size: 12px;
+  color: var(--color-gray-4);
+  font-size: 14px;
   font-weight: 400;
   line-height: 18px;
 }
@@ -71,10 +71,6 @@
   margin: 0 5px;
   color: rgb(183 185 201 / 62%);
   content: "·";
-}
-
-.personal-result__exam-number {
-  gap: 4px;
 }
 
 .personal-result__ranking {
