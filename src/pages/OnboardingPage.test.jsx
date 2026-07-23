@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -71,6 +71,27 @@ it('stores the confirmed exam number before navigating to personal ranking', asy
 
   await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/my-ranking'));
   expect(readExamNumber()).toBe('00123');
+});
+
+it('does not store or navigate when a dismissed lookup resolves later', async () => {
+  const user = userEvent.setup();
+  let resolveLookup;
+  lookupParticipant.mockImplementation(() => new Promise((resolve) => {
+    resolveLookup = resolve;
+  }));
+  renderPage();
+
+  await user.click(screen.getByRole('button', { name: '내 순위 확인하기' }));
+  await user.type(screen.getByLabelText('수험번호'), '00123');
+  await user.click(screen.getByRole('button', { name: '기록 확인하기' }));
+  await user.click(screen.getByRole('button', { name: '닫기' }));
+
+  await act(async () => {
+    resolveLookup({ examNumber: '00123' });
+  });
+
+  expect(readExamNumber()).toBeNull();
+  expect(screen.getByTestId('location')).toHaveTextContent('/');
 });
 
 it('navigates to the TOP 5 route from the secondary command', async () => {
