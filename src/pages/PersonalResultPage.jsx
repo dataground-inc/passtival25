@@ -6,6 +6,7 @@ import { AsyncState } from '../components/AsyncState';
 import { RecordList } from '../components/RecordList';
 import { TopBar } from '../components/TopBar';
 import { readExamNumber } from '../storage/examSession';
+import { formatDisplayValue } from '../utils/displayValue';
 
 const countFormatter = new Intl.NumberFormat('ko-KR');
 
@@ -15,6 +16,17 @@ function formatCount(value) {
   return Number.isFinite(numericValue)
     ? countFormatter.format(numericValue)
     : String(value ?? '');
+}
+
+function formatRank(value) {
+  return formatDisplayValue(value, (presentValue) => `${formatCount(presentValue)}위`);
+}
+
+function formatTotalCount(value) {
+  return formatDisplayValue(
+    value,
+    (presentValue) => `총 ${formatCount(presentValue)}명 중`,
+  );
 }
 
 export function PersonalResultPage() {
@@ -74,15 +86,15 @@ export function PersonalResultPage() {
 
           <div className="personal-result__content">
             <section className="personal-result__identity">
-              <h1>{participant.name}</h1>
+              <h1>{formatDisplayValue(participant.name)}</h1>
               <div className="personal-result__metadata" aria-label="참가자 정보">
-                <span>{participant.center}</span>
-                <span>{participant.grade}</span>
-                <span>{participant.gender}</span>
-                <span>{participant.group}</span>
+                <span>{formatDisplayValue(participant.center)}</span>
+                <span>{formatDisplayValue(participant.grade)}</span>
+                <span>{formatDisplayValue(participant.gender)}</span>
+                <span>{formatDisplayValue(participant.group)}</span>
                 <span className="personal-result__exam-number">
                   <span>수험번호</span>
-                  <span>{participant.examNumber}</span>
+                  <span>{formatDisplayValue(participant.examNumber)}</span>
                 </span>
               </div>
             </section>
@@ -90,9 +102,9 @@ export function PersonalResultPage() {
             <section className="personal-result__ranking" aria-labelledby="current-rank">
               <div>
                 <p id="current-rank">현재 순위</p>
-                <strong>{formatCount(participant.rank)}위</strong>
+                <strong>{formatRank(participant.rank)}</strong>
               </div>
-              <p>총 {formatCount(participant.totalCount)}명 중</p>
+              <p>{formatTotalCount(participant.totalCount)}</p>
             </section>
 
             <RecordList records={participant.records} />

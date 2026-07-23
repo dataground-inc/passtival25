@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -73,6 +73,38 @@ it('restores the session and renders every required participant result field', a
   expect(screen.getByText('총 1,233명 중')).toBeInTheDocument();
   expect(screen.getByText('메디신볼던지기').nextElementSibling).toHaveTextContent('8.9');
   expect(screen.queryByText('999')).not.toBeInTheDocument();
+});
+
+it('renders missing identity and rank values as 미응시 without empty or zero output', async () => {
+  saveExamNumber('00123');
+  lookupParticipant.mockResolvedValue({
+    ...participant,
+    examNumber: '   ',
+    name: '',
+    center: null,
+    grade: undefined,
+    gender: ' ',
+    group: '',
+    rank: null,
+    totalCount: null,
+  });
+
+  renderPage();
+
+  expect(await screen.findByRole('heading', { name: '미응시' })).toBeInTheDocument();
+
+  const metadata = screen.getByLabelText('참가자 정보');
+  expect(within(metadata).getAllByText('미응시')).toHaveLength(5);
+  expect(
+    [...metadata.querySelectorAll(':scope > span')].every((field) => field.textContent.trim()),
+  ).toBe(true);
+
+  const ranking = screen.getByRole('region', { name: '현재 순위' });
+  expect(within(ranking).getAllByText('미응시')).toHaveLength(2);
+  expect(within(ranking).queryByText('0위')).not.toBeInTheDocument();
+  expect(within(ranking).queryByText('총 0명 중')).not.toBeInTheDocument();
+  expect(within(ranking).queryByText(/^위$/)).not.toBeInTheDocument();
+  expect(within(ranking).queryByText(/^총\s*명 중$/)).not.toBeInTheDocument();
 });
 
 it('keeps the result shell mounted while loading', () => {
