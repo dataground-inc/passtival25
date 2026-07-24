@@ -8,7 +8,7 @@ import EventPage from './pages/Event';
 import NProgress from './nprogress'; // nprogress utils 파일
 
 // ✅ location 변경 감지해서 nprogress 실행
-const ProgressRouter = ({ setUserData, userData }) => {
+const ProgressRouter = ({ recordLoading, setRecordLoading, setUserData, userData }) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -22,8 +22,8 @@ const ProgressRouter = ({ setUserData, userData }) => {
 
   return (
     <Routes>
-      <Route path="/" element={<App setUserData={setUserData} />} />
-      <Route path="/my-ranking" element={<MyRankingPage userData={userData} />} />
+      <Route path="/" element={<App setRecordLoading={setRecordLoading} setUserData={setUserData} />} />
+      <Route path="/my-ranking" element={<MyRankingPage isLoading={recordLoading} userData={userData} />} />
       <Route path="/event" element={<EventPage />} />
     </Routes>
   );
@@ -31,10 +31,11 @@ const ProgressRouter = ({ setUserData, userData }) => {
 
 const Root = () => {
   const [userData, setUserData] = useState(null);
+  const [recordLoading, setRecordLoading] = useState(false);
 
   return (
     <HashRouter>
-      <ProgressRouter setUserData={setUserData} userData={userData} />
+      <ProgressRouter recordLoading={recordLoading} setRecordLoading={setRecordLoading} setUserData={setUserData} userData={userData} />
     </HashRouter>
   );
 };

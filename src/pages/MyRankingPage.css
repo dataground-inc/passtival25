@@ -54,3 +54,7 @@
     flex-direction: column;
     gap: 16px;
 }
+
+.my-ranking-page > .record-skeleton {
+    width: 100%;
+}
