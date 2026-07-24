@@ -1,0 +1,6 @@
+.record-skeleton { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+.record-skeleton__rank { align-items: center; background: linear-gradient(90deg, #0545ff10, #032999); border-radius: 12px; display: flex; gap: 16px; height: 60px; padding: 0 16px; }
+.record-skeleton__records { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.record-skeleton__item { background: #1c1c1c; border-radius: 8px; display: flex; flex-direction: column; gap: 4px; min-height: 58px; padding: 8px 16px; }
+.record-skeleton__item:last-child { grid-column: 1 / -1; }
+@media (prefers-reduced-motion: reduce) { .record-skeleton .react-loading-skeleton { --pseudo-element-display: none; } }

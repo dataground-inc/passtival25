@@ -2,8 +2,13 @@
 import React from 'react';
 import './MyRankingPage.css';
 import { TopNav } from '../components/TopNav';
+import { RecordSkeleton } from '../components/RecordSkeleton';
 
-export const MyRankingPage = ({ userData }) => {
+export const MyRankingPage = ({ isLoading, userData }) => {
+    if (isLoading) {
+        return <div className="my-ranking-page"><TopNav /><RecordSkeleton /></div>;
+    }
+
     if (!userData) {
         return <div className="my-ranking-page">데이터를 불러오는 중입니다...</div>;
     }

@@ -20,7 +20,7 @@ const FILTERS = [
 // ✅ 단일 API 주소 사용 (Apps Script에서 mode로 분기)
 const API_BASE = 'https://script.google.com/macros/s/AKfycbx223VNNJuM-xB_h0k5FlylFO8rZ_iKTbNCuPxfWkmYdCaumyt6wUJJQCEuATtxhHwr/exec';
 
-function App({ setUserData }) {
+function App({ setRecordLoading, setUserData }) {
   const [rankingData, setRankingData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState('');
@@ -31,17 +31,23 @@ function App({ setUserData }) {
 
   // ✅ 수험번호 입력 후 유저 정보 API 호출
   const handleExamSubmit = async (examNumber) => {
+    setRecordLoading(true);
+    navigate('/my-ranking');
+
     try {
       const res = await fetch(`${API_BASE}?mode=exam&examNumber=${examNumber}`);
       const data = await res.json();
       if (data.error) {
+        navigate('/');
         alert('수험번호를 찾을 수 없습니다.');
         return;
       }
       setUserData(data); // ✅ 부모에게 상태 전달
-      navigate('/my-ranking');
     } catch (err) {
+      navigate('/');
       alert('데이터 조회에 실패했습니다.');
+    } finally {
+      setRecordLoading(false);
     }
   };
 
