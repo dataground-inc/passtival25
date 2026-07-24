@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { fetchTopFive } from '../api/passtivalApi';
 import { TopFivePage } from './TopFivePage';
 
@@ -21,6 +21,10 @@ const rankings = [
 
 beforeEach(() => {
   fetchTopFive.mockReset();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 function LocationProbe() {
@@ -62,6 +66,16 @@ it('loads the first exact group and renders a short response without scores', as
   expect(fetchTopFive).toHaveBeenCalledWith('고3 남자');
   expect(screen.getAllByRole('listitem')).toHaveLength(2);
   expect(screen.queryByText('100')).not.toBeInTheDocument();
+});
+
+it('shows the successful TOP5 fetch time with zero-padded hours and minutes', async () => {
+  vi.spyOn(Date.prototype, 'getHours').mockReturnValue(9);
+  vi.spyOn(Date.prototype, 'getMinutes').mockReturnValue(5);
+  fetchTopFive.mockResolvedValue(rankings);
+
+  renderPage();
+
+  expect(await screen.findByText('09시 05분 기준', {}, { timeout: 500 })).toBeInTheDocument();
 });
 
 it('sends the selected group verbatim and renders its empty state', async () => {

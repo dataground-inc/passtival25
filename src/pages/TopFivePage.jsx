@@ -13,6 +13,7 @@ export function TopFivePage() {
   const [requestAttempt, setRequestAttempt] = useState(0);
   const [requestState, setRequestState] = useState('loading');
   const [rankings, setRankings] = useState([]);
+  const [lastUpdated, setLastUpdated] = useState('');
   const reduceMotion = useReducedMotion();
   const motionVariants = createMotionVariants(Boolean(reduceMotion));
 
@@ -20,16 +21,22 @@ export function TopFivePage() {
     let isCurrent = true;
 
     setRequestState('loading');
+    setLastUpdated('');
 
     fetchTopFive(selectedGroup)
       .then((result) => {
         if (isCurrent) {
           setRankings(result);
+          const now = new Date();
+          const hour = String(now.getHours()).padStart(2, '0');
+          const minute = String(now.getMinutes()).padStart(2, '0');
+          setLastUpdated(`${hour}시 ${minute}분 기준`);
           setRequestState('success');
         }
       })
       .catch(() => {
         if (isCurrent) {
+          setLastUpdated('');
           setRequestState('error');
         }
       });
@@ -59,6 +66,8 @@ export function TopFivePage() {
           onSelect={setSelectedGroup}
           selectedGroup={selectedGroup}
         />
+
+        {lastUpdated && <p className="top-five__updated">{lastUpdated}</p>}
 
         <section
           aria-labelledby={`ranking-tab-${GROUPS.indexOf(selectedGroup)}`}

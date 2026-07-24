@@ -105,6 +105,14 @@
   background: rgb(248 248 252 / 4%);
 }
 
+.top-five__updated {
+  margin: 12px 0 0;
+  color: var(--color-gray-3);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: right;
+}
+
 .top-five__panel {
   min-height: 460px;
   padding-top: 18px;
