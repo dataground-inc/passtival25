@@ -18,3 +18,16 @@ test('shows a skeleton instead of a missing-data message while loading', () => {
 
   expect(screen.getByRole('status', { name: '내 기록을 불러오는 중' })).toBeInTheDocument();
 });
+
+test('uses the required personal-record loading colors', () => {
+  const { container } = render(<RecordSkeleton />);
+  const skeletons = container.querySelectorAll('.react-loading-skeleton');
+
+  expect(skeletons).toHaveLength(12);
+  skeletons.forEach((skeleton) => {
+    expect(skeleton).toHaveStyle({
+      '--base-color': '#E4E6F0',
+      '--highlight-color': '#0545FF',
+    });
+  });
+});

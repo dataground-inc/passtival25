@@ -38,6 +38,7 @@ function App({ setRecordLoading, setUserData }) {
       const res = await fetch(`${API_BASE}?mode=exam&examNumber=${examNumber}`);
       const data = await res.json();
       if (data.error) {
+        navigate('/');
         alert('수험번호를 찾을 수 없습니다.');
         return;
       }
