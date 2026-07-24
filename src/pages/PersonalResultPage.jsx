@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { lookupParticipant } from '../api/passtivalApi';
@@ -60,6 +60,10 @@ export function PersonalResultPage() {
   const athleteHeroSource = genderLabel === '여학생'
     ? athleteHeroFemale
     : athleteHero;
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (!examNumber) {

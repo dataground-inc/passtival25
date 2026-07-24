@@ -45,6 +45,7 @@ const participant = {
 beforeEach(() => {
   sessionStorage.clear();
   lookupParticipant.mockReset();
+  window.scrollTo = vi.fn();
 });
 
 function LocationProbe() {
@@ -195,6 +196,16 @@ it('keeps the result shell mounted while loading', () => {
   expect(screen.getByRole('main')).toHaveClass('personal-result');
   expect(screen.getByRole('status')).toHaveTextContent('결과를 불러오는 중입니다.');
   expect(screen.getByRole('banner')).toHaveClass('top-bar--fixed');
+});
+
+it('resets the viewport to the top when the result route opens', () => {
+  const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+  saveExamNumber('00123');
+  lookupParticipant.mockReturnValue(new Promise(() => {}));
+
+  renderPage();
+
+  expect(scrollTo).toHaveBeenCalledWith(0, 0);
 });
 
 it('shows a retry action after a service failure and loads the next attempt', async () => {

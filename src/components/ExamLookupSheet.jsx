@@ -14,6 +14,7 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
   const dialogRef = useRef(null);
   const inputRef = useRef(null);
   const isMountedRef = useRef(true);
+  const shouldRestoreFocusRef = useRef(true);
   const [examNumber, setExamNumber] = useState('');
   const [error, setError] = useState('');
   const [isRetryable, setIsRetryable] = useState(false);
@@ -66,7 +67,9 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = previousOverflow;
-      triggerRef?.current?.focus();
+      if (shouldRestoreFocusRef.current) {
+        triggerRef?.current?.focus();
+      }
     };
   }, [onClose, triggerRef]);
 
@@ -91,6 +94,7 @@ export function ExamLookupSheet({ onClose, onSuccess, triggerRef }) {
       }
 
       setIsSubmitting(false);
+      shouldRestoreFocusRef.current = false;
       onSuccess(trimmedExamNumber);
     } catch (caughtError) {
       if (!isMountedRef.current) {

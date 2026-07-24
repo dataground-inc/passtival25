@@ -55,6 +55,37 @@ describe('ExamLookupSheet', () => {
     await waitFor(() => expect(onSuccess).toHaveBeenCalledWith('00123'));
   });
 
+  it('does not restore trigger focus when a successful lookup closes the sheet', async () => {
+    const user = userEvent.setup();
+    lookupParticipant.mockResolvedValue({ examNumber: '00123' });
+
+    function SuccessHarness() {
+      const [isOpen, setIsOpen] = useState(true);
+      const triggerRef = useRef(null);
+
+      return (
+        <>
+          <button ref={triggerRef} type="button">조회하기</button>
+          {isOpen && (
+            <ExamLookupSheet
+              onClose={() => setIsOpen(false)}
+              onSuccess={() => setIsOpen(false)}
+              triggerRef={triggerRef}
+            />
+          )}
+        </>
+      );
+    }
+
+    render(<SuccessHarness />);
+
+    await user.type(screen.getByLabelText('수험번호'), '00123');
+    await user.click(screen.getByRole('button', { name: '기록 확인하기' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(screen.getByRole('button', { name: '조회하기' })).not.toHaveFocus();
+  });
+
   it('disables submission while the lookup is pending', async () => {
     const user = userEvent.setup();
     let resolveLookup;
