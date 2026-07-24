@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
 const mockNavigate = jest.fn();
@@ -16,6 +16,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  jest.useRealTimers();
   jest.restoreAllMocks();
   mockNavigate.mockReset();
 });
@@ -25,6 +26,55 @@ test('renders the live ranking section', async () => {
 
   expect(screen.getByText('실시간 순위')).toBeInTheDocument();
   await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+});
+
+test('shows the zero-padded TOP5 fetch time after a successful response', async () => {
+  jest.useFakeTimers().setSystemTime(new Date(2026, 6, 24, 9, 5));
+
+  render(<App setUserData={jest.fn()} />);
+
+  expect(await screen.findByText('09시 05분 기준')).toBeInTheDocument();
+});
+
+test('clears the TOP5 fetch time while a filter-change response is pending', async () => {
+  jest.useFakeTimers().setSystemTime(new Date(2026, 6, 24, 9, 5));
+  global.fetch
+    .mockResolvedValueOnce({ json: () => Promise.resolve({ result: [] }) })
+    .mockImplementationOnce(() => new Promise(() => {}));
+
+  const { container } = render(<App setUserData={jest.fn()} />);
+
+  expect(await screen.findByText('09시 05분 기준')).toBeInTheDocument();
+
+  fireEvent.click(container.querySelector('.dropdown-toggle'));
+  fireEvent.click(screen.getByText('고3 이상 여자'));
+
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+  expect(screen.queryByText('09시 05분 기준')).not.toBeInTheDocument();
+});
+
+test('ignores an older TOP5 response while the latest filter request is pending', async () => {
+  let resolveInitialResponse;
+  jest.useFakeTimers().setSystemTime(new Date(2026, 6, 24, 9, 5));
+  global.fetch
+    .mockImplementationOnce(() => new Promise((resolve) => {
+      resolveInitialResponse = resolve;
+    }))
+    .mockImplementationOnce(() => new Promise(() => {}));
+
+  const { container } = render(<App setUserData={jest.fn()} />);
+
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(1));
+  fireEvent.click(container.querySelector('.dropdown-toggle'));
+  fireEvent.click(screen.getByText('고3 이상 여자'));
+  await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+
+  await act(async () => {
+    resolveInitialResponse({ json: () => Promise.resolve({ result: [] }) });
+  });
+
+  expect(screen.queryByText('09시 05분 기준')).not.toBeInTheDocument();
+  expect(screen.getAllByTestId('top5-skeleton-row')).toHaveLength(5);
 });
 
 test('navigates to the personal record while its lookup is pending', async () => {

@@ -53,30 +53,47 @@ function App({ setRecordLoading, setUserData }) {
 
   // ✅ Top5 랭킹 API 호출
   useEffect(() => {
+    let isCurrent = true;
+
     async function fetchRankingData() {
       setLoading(true);
+      setLastUpdate('');
       try {
         const res = await fetch(`${API_BASE}?mode=top5&filter=${selectedFilter}`);
         const data = await res.json();
 
+        if (!isCurrent) return;
+
         // 응답 형식에 따라 처리
         if (Array.isArray(data.result)) {
           setRankingData(data.result);
+          const now = new Date();
+          const hour = String(now.getHours()).padStart(2, '0');
+          const minute = String(now.getMinutes()).padStart(2, '0');
+          setLastUpdate(`${hour}시 ${minute}분 기준`);
         } else {
           console.error("Top5 응답 형식이 배열이 아닙니다", data);
           setRankingData([]); // 안전하게 초기화
+          setLastUpdate('');
         }
 
-        const now = new Date();
-        setLastUpdate(`${now.getHours()}시 ${now.getMinutes()}분 기준`);
       } catch (error) {
+        if (!isCurrent) return;
         console.error('랭킹 데이터를 불러오지 못했습니다:', error);
         setRankingData([]);
+        setLastUpdate('');
+      } finally {
+        if (isCurrent) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     }
 
     fetchRankingData();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [selectedFilter]);
 
 
@@ -100,7 +117,7 @@ function App({ setRecordLoading, setUserData }) {
               onChange={setSelectedFilter}
             />
           </div>
-          <div className='update'>{lastUpdate}</div>
+          {lastUpdate && <div className='update'>{lastUpdate}</div>}
         </div>
 
         <div className='list-wrapper'>
