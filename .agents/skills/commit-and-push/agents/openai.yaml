@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit and Push"
+  short_description: "Verify, commit, and safely push repository changes."
+  default_prompt: "Use $commit-and-push to commit and push the current project changes."
