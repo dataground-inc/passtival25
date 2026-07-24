@@ -73,7 +73,7 @@ it('sends the selected group verbatim and renders its empty state', async () => 
   renderPage();
 
   await screen.findByText('김민준');
-  await user.click(screen.getByRole('tab', { name: '고3 여자' }));
+  await user.click(screen.getByRole('tab', { name: '고3 이상 여자' }));
 
   expect(fetchTopFive).toHaveBeenLastCalledWith('고3 여자');
   expect(await screen.findByRole('status')).toHaveTextContent('아직 등록된 순위가 없습니다.');
@@ -105,7 +105,7 @@ it('ignores an older response after rapid group changes', async () => {
 
   renderPage();
 
-  await user.click(screen.getByRole('tab', { name: '고3 여자' }));
+  await user.click(screen.getByRole('tab', { name: '고3 이상 여자' }));
   secondRequest.resolve([{ name: '최신 참가자', center: '대전센터' }]);
 
   expect(await screen.findByText('최신 참가자')).toBeInTheDocument();

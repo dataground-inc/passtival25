@@ -4,7 +4,7 @@ import { expect, it, vi } from 'vitest';
 import { GROUPS } from '../api/passtivalApi';
 import { RankingTabs } from './RankingTabs';
 
-it('renders the exact Apps Script groups as accessible tabs', () => {
+it('renders the event-band names while retaining the Apps Script group values', () => {
   render(
     <RankingTabs
       groups={GROUPS}
@@ -16,10 +16,10 @@ it('renders the exact Apps Script groups as accessible tabs', () => {
   const tabs = screen.getAllByRole('tab');
 
   expect(tabs.map((tab) => tab.textContent)).toEqual([
-    '고3 남자',
-    '고3 여자',
-    '고2 남자',
-    '고2 여자',
+    '고3 이상 남자',
+    '고3 이상 여자',
+    '고2 이하 남자',
+    '고2 이하 여자',
   ]);
   expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   expect(tabs[0]).toHaveAttribute('tabindex', '0');
@@ -38,12 +38,12 @@ it('selects a group by click and arrow-key navigation', async () => {
     />,
   );
 
-  await user.click(screen.getByRole('tab', { name: '고3 여자' }));
+  await user.click(screen.getByRole('tab', { name: '고3 이상 여자' }));
   expect(onSelect).toHaveBeenLastCalledWith('고3 여자');
 
-  screen.getByRole('tab', { name: '고3 남자' }).focus();
+  screen.getByRole('tab', { name: '고3 이상 남자' }).focus();
   await user.keyboard('{ArrowRight}');
 
   expect(onSelect).toHaveBeenLastCalledWith('고3 여자');
-  expect(screen.getByRole('tab', { name: '고3 여자' })).toHaveFocus();
+  expect(screen.getByRole('tab', { name: '고3 이상 여자' })).toHaveFocus();
 });

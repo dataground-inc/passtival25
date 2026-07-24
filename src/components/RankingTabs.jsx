@@ -2,6 +2,13 @@ import { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { createMotionVariants } from '../motion';
 
+const GROUP_LABELS = {
+  '고3 남자': '고3 이상 남자',
+  '고3 여자': '고3 이상 여자',
+  '고2 남자': '고2 이하 남자',
+  '고2 여자': '고2 이하 여자',
+};
+
 export function RankingTabs({ groups, onSelect, selectedGroup }) {
   const tabRefs = useRef([]);
   const reduceMotion = useReducedMotion();
@@ -34,6 +41,7 @@ export function RankingTabs({ groups, onSelect, selectedGroup }) {
       <div aria-label="순위 그룹" className="ranking-tabs__list" role="tablist">
         {groups.map((group, index) => {
           const isSelected = group === selectedGroup;
+          const label = GROUP_LABELS[group] ?? group;
 
           return (
             <motion.button
@@ -52,7 +60,7 @@ export function RankingTabs({ groups, onSelect, selectedGroup }) {
               type="button"
               whileTap={motionVariants.press}
             >
-              <span className="ranking-tabs__label">{group}</span>
+              <span className="ranking-tabs__label">{label}</span>
               {isSelected && (
                 <motion.span
                   aria-hidden="true"
