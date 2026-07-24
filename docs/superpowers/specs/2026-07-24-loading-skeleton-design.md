@@ -2,7 +2,7 @@
 
 ## Goal
 
-Show a blue shimmer skeleton while TOP 5 rankings or a participant's personal record are being requested, without changing the layout size when data arrives.
+Show a blue-gray shimmer skeleton while TOP 5 rankings or a participant's personal record are being requested, without changing the layout size when data arrives.
 
 ## Scope
 
