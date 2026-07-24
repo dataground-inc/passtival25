@@ -1,0 +1,23 @@
+.ranking-skeleton {
+  width: 100%;
+}
+
+.ranking-skeleton__row {
+  align-items: center;
+  background: #0045ff;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  height: 60px;
+  padding: 0 16px;
+}
+
+.ranking-skeleton__center {
+  margin-left: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ranking-skeleton .react-loading-skeleton {
+    --pseudo-element-display: none;
+  }
+}
