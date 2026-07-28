@@ -8,6 +8,12 @@ it('renders the exact Apps Script groups as accessible tabs', () => {
   render(
     <RankingTabs
       groups={GROUPS}
+      labels={{
+        '고3 남자': '고3 이상 남자',
+        '고3 여자': '고3 이상 여자',
+        '고2 남자': '고2 이하 남자',
+        '고2 여자': '고2 이하 여자',
+      }}
       onSelect={() => {}}
       selectedGroup={GROUPS[0]}
     />,
@@ -16,10 +22,10 @@ it('renders the exact Apps Script groups as accessible tabs', () => {
   const tabs = screen.getAllByRole('tab');
 
   expect(tabs.map((tab) => tab.textContent)).toEqual([
-    '고3 남자',
-    '고3 여자',
-    '고2 남자',
-    '고2 여자',
+    '고3 이상 남자',
+    '고3 이상 여자',
+    '고2 이하 남자',
+    '고2 이하 여자',
   ]);
   expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   expect(tabs[0]).toHaveAttribute('tabindex', '0');

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { createMotionVariants } from '../motion';
 
-export function RankingTabs({ groups, onSelect, selectedGroup }) {
+export function RankingTabs({ groups, labels = {}, onSelect, selectedGroup }) {
   const tabRefs = useRef([]);
   const reduceMotion = useReducedMotion();
   const motionVariants = createMotionVariants(Boolean(reduceMotion));
@@ -52,15 +52,7 @@ export function RankingTabs({ groups, onSelect, selectedGroup }) {
               type="button"
               whileTap={motionVariants.press}
             >
-              <span className="ranking-tabs__label">{group}</span>
-              {isSelected && (
-                <motion.span
-                  aria-hidden="true"
-                  className="ranking-tabs__indicator"
-                  layoutId="active-ranking-tab-indicator"
-                  transition={motionVariants.tabIndicator}
-                />
-              )}
+              <span className="ranking-tabs__label">{labels[group] || group}</span>
             </motion.button>
           );
         })}
