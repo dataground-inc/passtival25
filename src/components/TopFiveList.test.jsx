@@ -25,10 +25,10 @@ it('renders only rank, full name, and center for every returned participant', ()
   const rows = screen.getAllByRole('listitem');
 
   expect(rows).toHaveLength(2);
-  expect(within(rows[0]).getByText('1')).toBeInTheDocument();
+  expect(within(rows[0]).getByText('1위')).toBeInTheDocument();
   expect(within(rows[0]).getByText('김민준')).toBeInTheDocument();
   expect(within(rows[0]).getByText('서울센터')).toBeInTheDocument();
-  expect(within(rows[1]).getByText('2')).toBeInTheDocument();
+  expect(within(rows[1]).getByText('2위')).toBeInTheDocument();
   expect(screen.queryByText('99')).not.toBeInTheDocument();
   expect(screen.queryByText('300')).not.toBeInTheDocument();
 });
@@ -45,4 +45,15 @@ it('uses five stable row placeholders while rankings load', () => {
 
   expect(screen.getByRole('status')).toHaveTextContent('순위를 불러오는 중입니다.');
   expect(screen.getAllByTestId('ranking-placeholder')).toHaveLength(5);
+});
+
+it('uses the existing female athlete image for female groups', () => {
+  const { container } = render(
+    <TopFiveList
+      athleteVariant="female"
+      entries={[{ name: '박서연', center: '부산센터' }]}
+    />,
+  );
+
+  expect(container.querySelector('[data-athlete-variant="female"]')).toBeInTheDocument();
 });

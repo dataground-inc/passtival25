@@ -2,10 +2,19 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { createMotionVariants } from '../motion';
 
 const PLACEHOLDER_COUNT = 5;
+const ATHLETE_IMAGES = {
+  female: `${import.meta.env.BASE_URL}athlete-female-card.png`,
+  male: `${import.meta.env.BASE_URL}athlete-male-card.png`,
+};
 
-export function TopFiveList({ entries = [], isLoading = false }) {
+export function TopFiveList({
+  athleteVariant = 'male',
+  entries = [],
+  isLoading = false,
+}) {
   const reduceMotion = useReducedMotion();
   const motionVariants = createMotionVariants(Boolean(reduceMotion));
+  const athleteImage = ATHLETE_IMAGES[athleteVariant] || ATHLETE_IMAGES.male;
 
   if (isLoading) {
     return (
@@ -56,12 +65,19 @@ export function TopFiveList({ entries = [], isLoading = false }) {
             variants={motionVariants.item}
           >
             <span aria-label={`${rank}위`} className="top-five-list__rank">
-              {rank}
+              {rank}위
             </span>
             <span className="top-five-list__participant">
               <strong>{entry.name}</strong>
               <span>{entry.center}</span>
             </span>
+            <img
+              alt=""
+              aria-hidden="true"
+              className={`top-five-list__athlete top-five-list__athlete--${athleteVariant}`}
+              data-athlete-variant={athleteVariant}
+              src={athleteImage}
+            />
           </motion.li>
         );
       })}

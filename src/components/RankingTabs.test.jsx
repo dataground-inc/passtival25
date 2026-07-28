@@ -8,6 +8,12 @@ it('renders the event-band names while retaining the Apps Script group values', 
   render(
     <RankingTabs
       groups={GROUPS}
+      labels={{
+        '고3 남자': '고3 이상 남자',
+        '고3 여자': '고3 이상 여자',
+        '고2 남자': '고2 이하 남자',
+        '고2 여자': '고2 이하 여자',
+      }}
       onSelect={() => {}}
       selectedGroup={GROUPS[0]}
     />,

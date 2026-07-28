@@ -93,6 +93,21 @@ it('sends the selected group verbatim and renders its empty state', async () => 
   expect(await screen.findByRole('status')).toHaveTextContent('아직 등록된 순위가 없습니다.');
 });
 
+it('renders all groups as tabs with one selected group', async () => {
+  fetchTopFive.mockResolvedValue(rankings);
+
+  renderPage();
+  await screen.findByText('김민준');
+
+  const tabs = screen.getAllByRole('tab');
+
+  expect(tabs).toHaveLength(4);
+  expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+  tabs.slice(1).forEach((tab) => {
+    expect(tab).toHaveAttribute('aria-selected', 'false');
+  });
+});
+
 it('retries the current group after a loading error', async () => {
   const user = userEvent.setup();
   fetchTopFive
